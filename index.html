@@ -1,0 +1,1602 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Days — Productive Life</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #000000;
+    --white: #FFFFFF;
+    --gray-50: #F9F9F9;
+    --gray-100: #F2F2F2;
+    --gray-200: #E5E5E5;
+    --gray-300: #D4D4D4;
+    --gray-400: #A3A3A3;
+    --gray-500: #737373;
+    --gray-600: #525252;
+    --gray-700: #404040;
+    --gray-800: #262626;
+    --gray-900: #171717;
+    --sidebar-w: 240px;
+    --radius: 14px;
+    --radius-sm: 8px;
+    --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+    --shadow-md: 0 4px 24px rgba(0,0,0,0.08);
+    --transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--gray-50);
+    color: var(--black);
+    min-height: 100vh;
+    display: flex;
+    overflow-x: hidden;
+  }
+
+  /* ── AUTH SCREEN ── */
+  .auth-screen {
+    position: fixed; inset: 0;
+    background: var(--black);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 1000;
+    opacity: 1;
+    transition: opacity 0.4s ease;
+  }
+
+  .auth-screen.hidden { opacity: 0; pointer-events: none; }
+
+  .auth-box {
+    background: var(--white);
+    border-radius: 20px;
+    padding: 40px;
+    width: 400px;
+    max-width: calc(100vw - 32px);
+    animation: modal-in 0.3s ease;
+  }
+
+  .auth-logo {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 32px;
+  }
+
+  .auth-logo-mark {
+    width: 36px; height: 36px;
+    background: var(--black);
+    border-radius: 9px;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .auth-logo-mark svg { width: 20px; height: 20px; }
+
+  .auth-logo-text {
+    font-size: 20px; font-weight: 600; letter-spacing: -0.5px;
+  }
+
+  .auth-title { font-size: 22px; font-weight: 600; letter-spacing: -0.5px; margin-bottom: 6px; }
+  .auth-sub { font-size: 14px; color: var(--gray-400); margin-bottom: 28px; }
+
+  .auth-tabs {
+    display: flex; gap: 4px; margin-bottom: 28px;
+    background: var(--gray-100); border-radius: 10px; padding: 4px;
+  }
+
+  .auth-tab {
+    flex: 1; padding: 8px; text-align: center; border-radius: 8px;
+    font-size: 13px; font-weight: 500; cursor: pointer;
+    transition: all var(--transition); color: var(--gray-400);
+  }
+
+  .auth-tab.active { background: var(--white); color: var(--black); box-shadow: var(--shadow); }
+
+  .auth-guest {
+    text-align: center; margin-top: 20px;
+    font-size: 13px; color: var(--gray-400);
+  }
+
+  .auth-guest a {
+    color: var(--black); font-weight: 500; cursor: pointer;
+    text-decoration: underline;
+  }
+
+  .auth-error {
+    background: #fff5f5; color: #b91c1c; border: 1px solid #fecaca;
+    border-radius: 8px; padding: 10px 14px; font-size: 13px;
+    margin-bottom: 16px; display: none;
+  }
+
+  .auth-error.show { display: block; }
+
+  /* ── SIDEBAR ── */
+  .sidebar {
+    width: var(--sidebar-w);
+    background: var(--black);
+    height: 100vh;
+    position: fixed; left: 0; top: 0;
+    display: flex; flex-direction: column;
+    padding: 28px 20px;
+    z-index: 100;
+    transition: transform var(--transition);
+  }
+
+  .logo {
+    display: flex; align-items: center; gap: 10px;
+    margin-bottom: 40px; padding: 0 6px;
+  }
+
+  .logo-mark {
+    width: 32px; height: 32px;
+    background: var(--white); border-radius: 8px;
+    display: flex; align-items: center; justify-content: center;
+  }
+
+  .logo-mark svg { width: 18px; height: 18px; }
+  .logo-text { font-size: 18px; font-weight: 600; color: var(--white); letter-spacing: -0.4px; }
+
+  .nav-section { margin-bottom: 32px; }
+
+  .nav-label {
+    font-size: 10px; font-weight: 500; color: var(--gray-500);
+    text-transform: uppercase; letter-spacing: 1.2px;
+    padding: 0 8px; margin-bottom: 8px;
+  }
+
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px; border-radius: 10px; cursor: pointer;
+    transition: background var(--transition);
+    color: var(--gray-400); font-size: 14px; font-weight: 400;
+    position: relative; user-select: none;
+  }
+
+  .nav-item:hover { background: rgba(255,255,255,0.07); color: var(--white); }
+  .nav-item.active { background: rgba(255,255,255,0.12); color: var(--white); font-weight: 500; }
+  .nav-item svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+  .nav-badge {
+    margin-left: auto; background: var(--white); color: var(--black);
+    font-size: 10px; font-weight: 600; font-family: 'DM Mono', monospace;
+    padding: 1px 6px; border-radius: 99px; min-width: 20px; text-align: center;
+  }
+
+  .sidebar-bottom { margin-top: auto; }
+
+  .user-card {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px; border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.1);
+    cursor: pointer; transition: background var(--transition);
+  }
+
+  .user-card:hover { background: rgba(255,255,255,0.05); }
+
+  .avatar {
+    width: 32px; height: 32px; background: var(--gray-200);
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 600; color: var(--black); flex-shrink: 0;
+  }
+
+  .user-info { flex: 1; overflow: hidden; }
+  .user-name { font-size: 13px; font-weight: 500; color: var(--white); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .user-plan { font-size: 11px; color: var(--gray-500); }
+
+  /* ── MAIN ── */
+  .main { margin-left: var(--sidebar-w); flex: 1; min-height: 100vh; display: flex; flex-direction: column; }
+
+  .topbar {
+    padding: 24px 36px 0;
+    display: flex; align-items: center; justify-content: space-between; gap: 16px;
+  }
+
+  .topbar-left { flex: 1; }
+  .page-title { font-size: 22px; font-weight: 600; letter-spacing: -0.5px; }
+  .page-sub { font-size: 13px; color: var(--gray-400); margin-top: 2px; }
+  .topbar-right { display: flex; align-items: center; gap: 10px; }
+
+  .btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 9px 16px; border-radius: 10px; font-size: 13px; font-weight: 500;
+    font-family: 'DM Sans', sans-serif; cursor: pointer;
+    transition: all var(--transition); border: none; outline: none;
+  }
+
+  .btn-primary { background: var(--black); color: var(--white); }
+  .btn-primary:hover { background: var(--gray-800); transform: translateY(-1px); box-shadow: var(--shadow-md); }
+  .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+  .btn-ghost { background: var(--white); color: var(--gray-700); border: 1px solid var(--gray-200); }
+  .btn-ghost:hover { background: var(--gray-50); border-color: var(--gray-300); }
+  .btn-danger { background: #fff5f5; color: #b91c1c; border: 1px solid #fecaca; }
+  .btn-danger:hover { background: #fef2f2; }
+  .btn svg { width: 16px; height: 16px; }
+
+  .content { padding: 24px 36px 48px; flex: 1; }
+
+  /* ── CARDS ── */
+  .card {
+    background: var(--white); border-radius: var(--radius);
+    box-shadow: var(--shadow); border: 1px solid var(--gray-100);
+    padding: 24px; transition: box-shadow var(--transition);
+  }
+
+  .card:hover { box-shadow: var(--shadow-md); }
+
+  .card-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+  .card-title { font-size: 15px; font-weight: 600; letter-spacing: -0.3px; }
+  .card-sub { font-size: 12px; color: var(--gray-400); margin-top: 2px; }
+  .card-action { font-size: 12px; color: var(--gray-400); cursor: pointer; font-weight: 500; transition: color var(--transition); }
+  .card-action:hover { color: var(--black); }
+
+  /* ── STATS ── */
+  .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 20px; }
+
+  .stat-card {
+    background: var(--white); border-radius: var(--radius);
+    box-shadow: var(--shadow); border: 1px solid var(--gray-100);
+    padding: 20px 22px; transition: all var(--transition); cursor: default;
+  }
+
+  .stat-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+  .stat-card.dark { background: var(--black); border-color: var(--black); }
+  .stat-label { font-size: 12px; color: var(--gray-400); font-weight: 400; margin-bottom: 10px; }
+  .stat-card.dark .stat-label { color: var(--gray-500); }
+  .stat-value { font-size: 28px; font-weight: 600; letter-spacing: -1px; font-family: 'DM Mono', monospace; }
+  .stat-card.dark .stat-value { color: var(--white); }
+  .stat-change { font-size: 12px; color: var(--gray-400); margin-top: 6px; display: flex; align-items: center; gap: 4px; }
+  .stat-card.dark .stat-change { color: var(--gray-500); }
+  .stat-up { color: #16a34a; }
+
+  /* ── GRID ── */
+  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+  .grid-3 { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; margin-bottom: 20px; }
+
+  /* ── WEEK BARS ── */
+  .week-bars { display: flex; align-items: flex-end; gap: 8px; height: 80px; margin-top: 4px; }
+
+  .week-bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; height: 100%; justify-content: flex-end; }
+
+  .week-bar { width: 100%; background: var(--gray-100); border-radius: 6px; position: relative; overflow: hidden; flex-shrink: 0; }
+
+  .week-bar-fill { position: absolute; bottom: 0; left: 0; right: 0; background: var(--black); border-radius: 6px; transition: height 1s cubic-bezier(0.4, 0, 0.2, 1); }
+
+  /* ── HABITS ── */
+  .habits-list { display: flex; flex-direction: column; gap: 14px; }
+  .habit-item { display: flex; align-items: center; gap: 12px; }
+  .habit-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 16px; }
+  .habit-info { flex: 1; }
+  .habit-name { font-size: 13px; font-weight: 500; }
+  .habit-bar-track { height: 4px; background: var(--gray-100); border-radius: 99px; margin-top: 5px; overflow: hidden; }
+  .habit-bar-fill { height: 100%; background: var(--black); border-radius: 99px; transition: width 1s cubic-bezier(0.4, 0, 0.2, 1); }
+  .habit-pct { font-size: 13px; font-weight: 600; font-family: 'DM Mono', monospace; }
+
+  /* ── TAGS ── */
+  .tag {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 4px 10px; border-radius: 99px; font-size: 11px; font-weight: 500;
+    border: 1px solid; white-space: nowrap; user-select: none;
+  }
+
+  .tag svg { width: 11px; height: 11px; }
+  .tag-pending { background: #f9f9f9; color: #737373; border-color: #e5e5e5; }
+  .tag-progress { background: #fafafa; color: #404040; border-color: #d4d4d4; }
+  .tag-review { background: #fafafa; color: #525252; border-color: #d4d4d4; }
+  .tag-success { background: #f0fdf4; color: #15803d; border-color: #bbf7d0; }
+  .tag-failed { background: #fff5f5; color: #b91c1c; border-color: #fecaca; }
+  .tag-expired { background: #fef3f2; color: #9a3412; border-color: #fed7aa; }
+
+  /* ── TASKS ── */
+  .tasks-list { display: flex; flex-direction: column; gap: 2px; }
+
+  .task-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 14px; border-radius: 10px; cursor: pointer;
+    transition: background var(--transition); border: 1px solid transparent;
+  }
+
+  .task-item:hover { background: var(--gray-50); border-color: var(--gray-100); }
+  .task-item.done { opacity: 0.45; }
+
+  .task-check {
+    width: 20px; height: 20px; border-radius: 6px;
+    border: 1.5px solid var(--gray-300);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0; transition: all var(--transition);
+  }
+
+  .task-item.done .task-check { background: var(--black); border-color: var(--black); }
+  .task-check svg { width: 12px; height: 12px; color: var(--white); opacity: 0; transition: opacity var(--transition); }
+  .task-item.done .task-check svg { opacity: 1; }
+
+  .task-content { flex: 1; min-width: 0; }
+  .task-name { font-size: 14px; font-weight: 400; }
+  .task-item.done .task-name { text-decoration: line-through; }
+  .task-meta { font-size: 11px; color: var(--gray-400); margin-top: 2px; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
+  .task-days-label { font-size: 10px; color: var(--gray-400); background: var(--gray-100); padding: 2px 6px; border-radius: 4px; }
+
+  .task-delete {
+    width: 28px; height: 28px; border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    opacity: 0; transition: all var(--transition); cursor: pointer;
+    color: var(--gray-400); flex-shrink: 0;
+  }
+
+  .task-item:hover .task-delete { opacity: 1; }
+  .task-delete:hover { color: #b91c1c; background: #fff5f5; }
+  .task-delete svg { width: 14px; height: 14px; }
+
+  /* ── ROUTINE ITEMS ── */
+  .routine-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px; border-radius: 12px; border: 1px solid var(--gray-100);
+    margin-bottom: 10px; background: var(--white);
+    transition: all var(--transition);
+  }
+
+  .routine-item:hover { border-color: var(--gray-200); box-shadow: var(--shadow); }
+
+  .routine-icon {
+    width: 40px; height: 40px; border-radius: 10px;
+    background: var(--gray-100); display: flex; align-items: center; justify-content: center;
+    font-size: 18px; flex-shrink: 0;
+  }
+
+  .routine-info { flex: 1; min-width: 0; }
+  .routine-name { font-size: 14px; font-weight: 500; }
+  .routine-days { font-size: 11px; color: var(--gray-400); margin-top: 3px; }
+
+  .day-chips { display: flex; flex-wrap: wrap; gap: 4px; }
+
+  .day-chip {
+    padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 500;
+    background: var(--gray-100); color: var(--gray-500); cursor: pointer;
+    border: 1.5px solid transparent; transition: all var(--transition); user-select: none;
+  }
+
+  .day-chip.selected { background: var(--black); color: var(--white); border-color: var(--black); }
+  .day-chip:hover:not(.selected) { border-color: var(--gray-300); }
+
+  /* ── MODAL ── */
+  .modal-overlay {
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 500; display: none;
+    align-items: center; justify-content: center;
+    backdrop-filter: blur(4px);
+  }
+
+  .modal-overlay.open { display: flex; }
+
+  .modal {
+    background: var(--white); border-radius: 18px; padding: 28px;
+    width: 460px; max-width: calc(100vw - 32px);
+    box-shadow: 0 24px 80px rgba(0,0,0,0.2);
+    animation: modal-in 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    max-height: 90vh; overflow-y: auto;
+  }
+
+  @keyframes modal-in {
+    from { opacity: 0; transform: translateY(12px) scale(0.97); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  .modal-title { font-size: 17px; font-weight: 600; letter-spacing: -0.4px; margin-bottom: 20px; }
+
+  .field { margin-bottom: 16px; }
+  .field-label { font-size: 12px; font-weight: 500; color: var(--gray-500); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.6px; }
+
+  .field-input {
+    width: 100%; padding: 11px 14px; border-radius: 10px;
+    border: 1.5px solid var(--gray-200); font-size: 14px;
+    font-family: 'DM Sans', sans-serif; color: var(--black);
+    outline: none; transition: border-color var(--transition);
+    background: var(--white);
+  }
+
+  .field-input:focus { border-color: var(--black); }
+  .field-select { appearance: none; cursor: pointer; }
+  .modal-actions { display: flex; gap: 10px; margin-top: 24px; justify-content: flex-end; }
+
+  /* ── FINANCE ── */
+  .finance-setup {
+    background: var(--gray-50); border-radius: 14px;
+    padding: 24px; border: 1.5px dashed var(--gray-200);
+    text-align: center; margin-bottom: 20px;
+  }
+
+  .finance-setup h3 { font-size: 16px; font-weight: 600; margin-bottom: 8px; }
+  .finance-setup p { font-size: 13px; color: var(--gray-400); margin-bottom: 20px; }
+
+  .deposit-grid {
+    display: grid; grid-template-columns: repeat(8, 1fr); gap: 8px;
+  }
+
+  .deposit-cell {
+    aspect-ratio: 1; border-radius: 8px; background: var(--gray-100);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight: 500; font-family: 'DM Mono', monospace;
+    color: var(--gray-500); cursor: pointer; transition: all var(--transition);
+    border: 1.5px solid transparent; flex-direction: column; gap: 2px;
+    user-select: none;
+  }
+
+  .deposit-cell:hover { border-color: var(--gray-300); background: var(--gray-50); }
+  .deposit-cell.done { background: var(--black); color: var(--white); border-color: var(--black); }
+  .deposit-cell .cell-num { font-size: 9px; opacity: 0.5; }
+
+  /* ── PROGRESS BAR ── */
+  .prog-bar-track { height: 8px; background: var(--gray-100); border-radius: 99px; overflow: hidden; margin-top: 12px; }
+  .prog-bar-fill { height: 100%; background: var(--black); border-radius: 99px; transition: width 1s cubic-bezier(0.4, 0, 0.2, 1); }
+
+  /* ── VIEWS ── */
+  .view { display: none; }
+  .view.active { display: block; }
+
+  /* ── TABS ── */
+  .tabs { display: flex; gap: 4px; margin-bottom: 20px; }
+
+  .tab {
+    padding: 7px 14px; border-radius: 8px; font-size: 13px; font-weight: 500;
+    cursor: pointer; color: var(--gray-400); transition: all var(--transition);
+    border: 1px solid transparent;
+  }
+
+  .tab.active { background: var(--black); color: var(--white); }
+  .tab:not(.active):hover { color: var(--black); background: var(--gray-100); }
+
+  /* ── MOBILE ── */
+  .menu-toggle {
+    display: none; position: fixed; top: 16px; left: 16px; z-index: 200;
+    width: 40px; height: 40px; background: var(--white);
+    border: 1px solid var(--gray-200); border-radius: 10px;
+    align-items: center; justify-content: center; cursor: pointer; box-shadow: var(--shadow);
+  }
+
+  .overlay-bg {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.4); z-index: 90;
+  }
+
+  /* ── LINE CHART ── */
+  .line-chart-wrap { position: relative; height: 100px; margin-top: 8px; }
+  .chart-svg { width: 100%; height: 100%; }
+
+  /* ── ROUTINE WEEK GRID ── */
+  .routine-week-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; margin-bottom: 24px; }
+
+  .routine-day {
+    border-radius: 10px; padding: 10px 6px; text-align: center;
+    background: var(--gray-100); cursor: pointer;
+    transition: all var(--transition); border: 1.5px solid transparent;
+  }
+
+  .routine-day.today { background: var(--black); }
+  .routine-day.today .rd-name, .routine-day.today .rd-num { color: var(--white); }
+  .routine-day:not(.today):hover { border-color: var(--gray-300); background: var(--gray-50); }
+  .rd-name { font-size: 10px; color: var(--gray-400); font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
+  .rd-num { font-size: 18px; font-weight: 600; font-family: 'DM Mono', monospace; margin-top: 4px; }
+  .rd-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--gray-300); margin: 6px auto 0; }
+  .routine-day.today .rd-dot { background: rgba(255,255,255,0.4); }
+  .routine-day.has-tasks .rd-dot { background: var(--gray-500); }
+  .routine-day.today.has-tasks .rd-dot { background: rgba(255,255,255,0.8); }
+
+  /* ── EMPTY STATE ── */
+  .empty-state { text-align: center; padding: 40px 20px; color: var(--gray-400); }
+  .empty-state svg { width: 40px; height: 40px; margin-bottom: 12px; opacity: 0.3; }
+  .empty-state p { font-size: 14px; }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fade-up {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .card, .stat-card { animation: fade-up 0.4s cubic-bezier(0.4, 0, 0.2, 1) both; }
+  .stat-card:nth-child(1) { animation-delay: 0.05s; }
+  .stat-card:nth-child(2) { animation-delay: 0.10s; }
+  .stat-card:nth-child(3) { animation-delay: 0.15s; }
+  .stat-card:nth-child(4) { animation-delay: 0.20s; }
+
+  /* ── TOAST ── */
+  .toast-wrap { position: fixed; bottom: 24px; right: 24px; z-index: 9999; display: flex; flex-direction: column; gap: 8px; }
+
+  .toast {
+    background: var(--black); color: var(--white); padding: 12px 16px;
+    border-radius: 10px; font-size: 13px; font-weight: 500;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.2);
+    animation: toast-in 0.3s ease;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .toast.success { background: #15803d; }
+  .toast.error { background: #b91c1c; }
+
+  @keyframes toast-in { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+  @keyframes toast-out { from { opacity: 1; } to { opacity: 0; transform: translateY(8px); } }
+
+  .scrollable-x { overflow-x: auto; }
+
+  /* ── SAVE BANNER ── */
+  .save-banner {
+    background: #fffbeb; border: 1px solid #fde68a; border-radius: 10px;
+    padding: 12px 16px; margin-bottom: 20px; font-size: 13px; color: #92400e;
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  }
+
+  .save-banner.hidden { display: none; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    .stats-row { grid-template-columns: repeat(2, 1fr); }
+    .grid-2 { grid-template-columns: 1fr; }
+    .grid-3 { grid-template-columns: 1fr; }
+    .deposit-grid { grid-template-columns: repeat(6, 1fr); }
+  }
+
+  @media (max-width: 640px) {
+    .sidebar { transform: translateX(-100%); }
+    .sidebar.open { transform: translateX(0); }
+    .main { margin-left: 0; }
+    .menu-toggle { display: flex; }
+    .overlay-bg.open { display: block; }
+    .content { padding: 16px 16px 60px; }
+    .topbar { padding: 64px 16px 0; }
+    .stats-row { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+    .deposit-grid { grid-template-columns: repeat(5, 1fr); }
+  }
+
+  /* ── CHALLENGE WEEK CARDS ── */
+  .week-challenge-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 8px; }
+  .week-card {
+    border-radius: 10px; border: 1.5px solid var(--gray-200);
+    padding: 12px 8px; text-align: center; cursor: pointer;
+    transition: all var(--transition); background: var(--white);
+  }
+  .week-card:hover { border-color: var(--gray-400); }
+  .week-card.done { background: var(--black); border-color: var(--black); }
+  .week-card.done .wc-value, .week-card.done .wc-week { color: var(--white); }
+  .wc-week { font-size: 10px; color: var(--gray-400); font-weight: 500; margin-bottom: 4px; }
+  .wc-value { font-size: 13px; font-weight: 600; font-family: 'DM Mono', monospace; }
+</style>
+</head>
+<body>
+
+<!-- TOAST CONTAINER -->
+<div class="toast-wrap" id="toastWrap"></div>
+
+<!-- AUTH SCREEN -->
+<div class="auth-screen" id="authScreen">
+  <div class="auth-box">
+    <div class="auth-logo">
+      <div class="auth-logo-mark">
+        <svg viewBox="0 0 18 18" fill="none">
+          <rect x="2" y="2" width="6" height="6" rx="1.5" fill="white"/>
+          <rect x="10" y="2" width="6" height="6" rx="1.5" fill="white" opacity="0.3"/>
+          <rect x="2" y="10" width="6" height="6" rx="1.5" fill="white" opacity="0.3"/>
+          <rect x="10" y="10" width="6" height="6" rx="1.5" fill="white"/>
+        </svg>
+      </div>
+      <span class="auth-logo-text">Days</span>
+    </div>
+
+    <div class="auth-tabs">
+      <div class="auth-tab active" onclick="switchAuthTab('login')">Entrar</div>
+      <div class="auth-tab" onclick="switchAuthTab('register')">Criar conta</div>
+    </div>
+
+    <div id="authError" class="auth-error"></div>
+
+    <div id="loginForm">
+      <div class="field">
+        <div class="field-label">E-mail</div>
+        <input class="field-input" type="email" id="loginEmail" placeholder="email@exemplo.com">
+      </div>
+      <div class="field">
+        <div class="field-label">Senha</div>
+        <input class="field-input" type="password" id="loginPassword" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()">
+      </div>
+      <button class="btn btn-primary" style="width:100%" onclick="doLogin()" id="loginBtn">Entrar</button>
+    </div>
+
+    <div id="registerForm" style="display:none">
+      <div class="field">
+        <div class="field-label">Nome</div>
+        <input class="field-input" type="text" id="regName" placeholder="Seu nome">
+      </div>
+      <div class="field">
+        <div class="field-label">E-mail</div>
+        <input class="field-input" type="email" id="regEmail" placeholder="email@exemplo.com">
+      </div>
+      <div class="field">
+        <div class="field-label">Senha</div>
+        <input class="field-input" type="password" id="regPassword" placeholder="Mín. 6 caracteres" onkeydown="if(event.key==='Enter')doRegister()">
+      </div>
+      <button class="btn btn-primary" style="width:100%" onclick="doRegister()" id="registerBtn">Criar conta</button>
+    </div>
+
+    <div class="auth-guest">
+      Prefere não criar conta? <a onclick="enterAsGuest()">Continuar como visitante</a>
+      <div style="margin-top:8px;font-size:11px;color:var(--gray-300)">⚠️ Dados não serão salvos ao fechar o site</div>
+    </div>
+  </div>
+</div>
+
+<!-- Mobile menu toggle -->
+<button class="menu-toggle" id="menuToggle" aria-label="Menu">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+    <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
+  </svg>
+</button>
+
+<div class="overlay-bg" id="overlayBg"></div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="logo">
+    <div class="logo-mark">
+      <svg viewBox="0 0 18 18" fill="none">
+        <rect x="2" y="2" width="6" height="6" rx="1.5" fill="black"/>
+        <rect x="10" y="2" width="6" height="6" rx="1.5" fill="black" opacity="0.3"/>
+        <rect x="2" y="10" width="6" height="6" rx="1.5" fill="black" opacity="0.3"/>
+        <rect x="10" y="10" width="6" height="6" rx="1.5" fill="black"/>
+      </svg>
+    </div>
+    <span class="logo-text">Days</span>
+  </div>
+
+  <nav class="nav-section">
+    <div class="nav-label">Main</div>
+    <div class="nav-item active" data-view="dashboard" onclick="navigate(this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/>
+        <rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>
+      </svg>
+      Dashboard
+    </div>
+    <div class="nav-item" data-view="routine" onclick="navigate(this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
+      </svg>
+      Rotina
+      <span class="nav-badge" id="badge-routine">0</span>
+    </div>
+    <div class="nav-item" data-view="tasks" onclick="navigate(this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
+      </svg>
+      Tasks
+      <span class="nav-badge" id="badge-tasks">0</span>
+    </div>
+    <div class="nav-item" data-view="finance" onclick="navigate(this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/>
+      </svg>
+      Desafio
+    </div>
+  </nav>
+
+  <nav class="nav-section">
+    <div class="nav-label">Config</div>
+    <div class="nav-item" data-view="settings" onclick="navigate(this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06A1.65 1.65 0 0015 19.4a1.65 1.65 0 00-1.65 1.5V21a2 2 0 01-2 2 2 2 0 01-2-2v-.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-1.82.33l-.06-.06a2 2 0 010-2.83 2 2 0 012.83 0l.06.06A1.65 1.65 0 009 4.6a1.65 1.65 0 001.65-1.5V3a2 2 0 012-2 2 2 0 012 2v.09A1.65 1.65 0 0015 4.6a1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 0 2 2 0 010 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.5 1.65H21a2 2 0 012 2 2 2 0 01-2 2h-.09A1.65 1.65 0 0019.4 15z"/>
+      </svg>
+      Configurações
+    </div>
+  </nav>
+
+  <div class="sidebar-bottom">
+    <div class="user-card" onclick="handleUserCardClick()">
+      <div class="avatar" id="sidebarAvatar">?</div>
+      <div class="user-info">
+        <div class="user-name" id="sidebarName">Carregando...</div>
+        <div class="user-plan" id="sidebarPlan">—</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN CONTENT -->
+<main class="main">
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="page-title" id="pageTitle">Dashboard</div>
+      <div class="page-sub" id="pageSub">Visão geral do seu progresso</div>
+    </div>
+    <div class="topbar-right" id="topbarRight">
+      <button class="btn btn-primary" onclick="openAddModal()" id="btnAddMain">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+        </svg>
+        Nova Tarefa
+      </button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- SAVE BANNER (visitante) -->
+    <div class="save-banner hidden" id="saveBanner">
+      <span>⚠️ Você está como <strong>visitante</strong> — seus dados não são salvos automaticamente.</span>
+      <button class="btn btn-primary" style="font-size:12px;padding:7px 12px;white-space:nowrap" onclick="showAuthScreen()">Criar conta grátis</button>
+    </div>
+
+    <!-- ── DASHBOARD ── -->
+    <div class="view active" id="view-dashboard">
+      <div class="stats-row">
+        <div class="stat-card dark">
+          <div class="stat-label">Progresso Geral</div>
+          <div class="stat-value" id="stat-overall">0%</div>
+          <div class="stat-change">tasks concluídas hoje</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Tasks Concluídas</div>
+          <div class="stat-value" id="stat-done">0</div>
+          <div class="stat-change">de <span id="stat-total">0</span> no total</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Rotinas Ativas</div>
+          <div class="stat-value" id="stat-routines">0</div>
+          <div class="stat-change">hábitos cadastrados</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-label">Desafio Anual</div>
+          <div class="stat-value" id="stat-deposits">R$0</div>
+          <div class="stat-change" id="stat-deposits-sub">reserva acumulada</div>
+        </div>
+      </div>
+
+      <div class="grid-3">
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Progresso Semanal</div>
+              <div class="card-sub">Tarefas concluídas por dia</div>
+            </div>
+          </div>
+          <div class="week-bars" id="weekBars"></div>
+          <div style="display:flex;justify-content:space-between;margin-top:8px" id="weekLabels"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div><div class="card-title">Por Categoria</div><div class="card-sub">Distribuição de tasks</div></div>
+          </div>
+          <div class="habits-list" id="categoryStats"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div><div class="card-title">Tarefas Recentes</div></div>
+          <span class="card-action" onclick="navigate(document.querySelector('[data-view=tasks]'))">Ver todas →</span>
+        </div>
+        <div class="tasks-list" id="dashboard-tasks"></div>
+      </div>
+    </div>
+
+    <!-- ── TASKS ── -->
+    <div class="view" id="view-tasks">
+      <div class="tabs" id="taskFilterTabs">
+        <div class="tab active" data-filter="all" onclick="filterTasks(this)">Todas</div>
+        <div class="tab" data-filter="pending" onclick="filterTasks(this)">Pendentes</div>
+        <div class="tab" data-filter="done" onclick="filterTasks(this)">Concluídas</div>
+      </div>
+      <div class="card">
+        <div class="tasks-list" id="all-tasks"></div>
+      </div>
+    </div>
+
+    <!-- ── ROTINA ── -->
+    <div class="view" id="view-routine">
+      <div class="card" style="margin-bottom:20px">
+        <div class="card-header">
+          <div>
+            <div class="card-title">Semana atual</div>
+            <div class="card-sub" id="routine-date-range">—</div>
+          </div>
+        </div>
+        <div class="routine-week-grid" id="routineWeekGrid"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-header">
+          <div><div class="card-title">Minhas Rotinas</div><div class="card-sub">Hábitos e recorrências</div></div>
+          <button class="btn btn-primary" onclick="openRoutineModal()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Nova Rotina
+          </button>
+        </div>
+        <div id="routineList"></div>
+      </div>
+    </div>
+
+    <!-- ── DESAFIO FINANCEIRO ── -->
+    <div class="view" id="view-finance">
+      <!-- Setup inicial se não configurado -->
+      <div id="financeSetup" class="finance-setup">
+        <h3>🎯 Configure seu Desafio Anual</h3>
+        <p>Defina quanto quer guardar até o fim do ano e veja o plano semana a semana.</p>
+        <div style="display:flex;gap:12px;justify-content:center;align-items:flex-end;flex-wrap:wrap">
+          <div class="field" style="margin:0;min-width:200px">
+            <div class="field-label">Meta anual (R$)</div>
+            <input class="field-input" type="number" id="challengeGoalInput" placeholder="Ex: 2400" min="52" step="1">
+          </div>
+          <button class="btn btn-primary" onclick="setupChallenge()">Criar desafio</button>
+        </div>
+        <div id="challengePreview" style="margin-top:20px;display:none">
+          <div style="font-size:13px;color:var(--gray-500);margin-bottom:12px">Pré-visualização das semanas:</div>
+          <div id="challengePreviewGrid" class="week-challenge-grid" style="max-width:600px;margin:0 auto"></div>
+        </div>
+      </div>
+
+      <!-- Stats do desafio -->
+      <div id="financeStats" style="display:none">
+        <div class="grid-2" style="margin-bottom:16px">
+          <div class="stat-card dark" style="animation:none">
+            <div class="stat-label">Total Acumulado</div>
+            <div class="stat-value" id="finance-total">R$ 0</div>
+            <div class="stat-change" id="finance-progress-text">0 de 52 semanas</div>
+          </div>
+          <div class="stat-card" style="animation:none">
+            <div class="stat-label">Meta do Ano</div>
+            <div class="stat-value" id="finance-goal-display">R$ 0</div>
+            <div class="stat-change" id="finance-pct-label">0% concluído</div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-bottom:16px">
+          <div class="card-header">
+            <div><div class="card-title">Progresso</div></div>
+            <button class="btn btn-ghost" style="font-size:12px;padding:7px 12px" onclick="resetChallenge()">Resetar desafio</button>
+          </div>
+          <div class="prog-bar-track">
+            <div class="prog-bar-fill" id="financeBar" style="width:0%"></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div><div class="card-title" id="challengeTitle">Desafio das 52 Semanas</div><div class="card-sub">Clique em cada semana para marcar como depositado</div></div>
+          </div>
+          <div class="week-challenge-grid" id="challengeGrid"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── CONFIGURAÇÕES ── -->
+    <div class="view" id="view-settings">
+      <div class="card" style="max-width:480px">
+        <div class="card-title" style="margin-bottom:20px">Perfil</div>
+        <div class="field">
+          <div class="field-label">Nome</div>
+          <input class="field-input" type="text" id="settingName" placeholder="Seu nome">
+        </div>
+        <div class="field">
+          <div class="field-label">E-mail</div>
+          <input class="field-input" type="email" id="settingEmail" placeholder="—" disabled>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:8px;flex-wrap:wrap">
+          <button class="btn btn-primary" onclick="saveSettings()">Salvar alterações</button>
+          <button class="btn btn-danger" onclick="doLogout()" id="logoutBtn">Sair da conta</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</main>
+
+<!-- MODAL: Nova Task -->
+<div class="modal-overlay" id="modalTask" onclick="closeModalOutside(event,'modalTask')">
+  <div class="modal">
+    <div class="modal-title">Nova Tarefa</div>
+    <div class="field">
+      <div class="field-label">Título</div>
+      <input class="field-input" type="text" id="taskTitleInput" placeholder="Ex: Estudar 1 hora">
+    </div>
+    <div class="field">
+      <div class="field-label">Categoria</div>
+      <select class="field-input field-select" id="taskCategoryInput">
+        <option value="📚 Estudo">📚 Estudo</option>
+        <option value="💪 Saúde">💪 Saúde</option>
+        <option value="💼 Trabalho">💼 Trabalho</option>
+        <option value="🏠 Pessoal">🏠 Pessoal</option>
+        <option value="💡 Outros">💡 Outros</option>
+      </select>
+    </div>
+    <div class="field">
+      <div class="field-label">Status</div>
+      <select class="field-input field-select" id="taskStatusInput">
+        <option value="pending">Pending</option>
+        <option value="progress">In Progress</option>
+        <option value="review">In Review</option>
+      </select>
+    </div>
+    <div class="field">
+      <div class="field-label">Dias da semana (opcional)</div>
+      <div class="day-chips" id="taskDayChips">
+        <div class="day-chip" data-day="Seg">Seg</div>
+        <div class="day-chip" data-day="Ter">Ter</div>
+        <div class="day-chip" data-day="Qua">Qua</div>
+        <div class="day-chip" data-day="Qui">Qui</div>
+        <div class="day-chip" data-day="Sex">Sex</div>
+        <div class="day-chip" data-day="Sáb">Sáb</div>
+        <div class="day-chip" data-day="Dom">Dom</div>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('modalTask')">Cancelar</button>
+      <button class="btn btn-primary" onclick="addTask()">Adicionar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Nova Rotina -->
+<div class="modal-overlay" id="modalRoutine" onclick="closeModalOutside(event,'modalRoutine')">
+  <div class="modal">
+    <div class="modal-title">Nova Rotina</div>
+    <div class="field">
+      <div class="field-label">Nome do hábito</div>
+      <input class="field-input" type="text" id="routineNameInput" placeholder="Ex: Meditação matinal">
+    </div>
+    <div class="field">
+      <div class="field-label">Ícone / Emoji</div>
+      <input class="field-input" type="text" id="routineIconInput" placeholder="Ex: 🧘" maxlength="4">
+    </div>
+    <div class="field">
+      <div class="field-label">Dias da semana</div>
+      <div class="day-chips" id="routineDayChips">
+        <div class="day-chip" data-day="Seg">Seg</div>
+        <div class="day-chip" data-day="Ter">Ter</div>
+        <div class="day-chip" data-day="Qua">Qua</div>
+        <div class="day-chip" data-day="Qui">Qui</div>
+        <div class="day-chip" data-day="Sex">Sex</div>
+        <div class="day-chip" data-day="Sáb">Sáb</div>
+        <div class="day-chip" data-day="Dom">Dom</div>
+      </div>
+    </div>
+    <div class="field">
+      <div class="field-label">Horário (opcional)</div>
+      <input class="field-input" type="time" id="routineTimeInput">
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('modalRoutine')">Cancelar</button>
+      <button class="btn btn-primary" onclick="addRoutine()">Adicionar</button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+// ── FIREBASE IMPORTS ──
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import {
+  getAuth, onAuthStateChanged,
+  signInWithEmailAndPassword, createUserWithEmailAndPassword,
+  signOut, updateProfile
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import {
+  getFirestore, doc, setDoc, getDoc,
+  collection, addDoc, updateDoc, deleteDoc,
+  onSnapshot, query, orderBy, getDocs
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+// ── FIREBASE CONFIG ──
+// ⚠️ SUBSTITUA com suas credenciais do Firebase Console
+const firebaseConfig = {
+  apiKey: "AIzaSyXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+  authDomain: "days-app-XXXXX.firebaseapp.com",
+  projectId: "days-app-XXXXX",
+  storageBucket: "days-app-XXXXX.appspot.com",
+  messagingSenderId: "000000000000",
+  appId: "1:000000000000:web:XXXXXXXXXXXXXXXX"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+// ── STATE ──
+let currentUser = null;
+let isGuest = false;
+let tasks = [];
+let routines = [];
+let challengeConfig = null; // { goal, weekValues, deposits: [] }
+let currentFilter = 'all';
+let unsubTasks = null;
+let unsubRoutines = null;
+let unsubChallenge = null;
+
+// ── AUTH ──
+window.switchAuthTab = (tab) => {
+  document.querySelectorAll('.auth-tab').forEach((t, i) => t.classList.toggle('active', (i === 0) === (tab === 'login')));
+  document.getElementById('loginForm').style.display = tab === 'login' ? '' : 'none';
+  document.getElementById('registerForm').style.display = tab === 'register' ? '' : 'none';
+  document.getElementById('authError').classList.remove('show');
+};
+
+window.doLogin = async () => {
+  const email = document.getElementById('loginEmail').value.trim();
+  const pwd = document.getElementById('loginPassword').value;
+  if (!email || !pwd) return showAuthError('Preencha e-mail e senha.');
+  document.getElementById('loginBtn').disabled = true;
+  document.getElementById('loginBtn').textContent = 'Entrando...';
+  try {
+    await signInWithEmailAndPassword(auth, email, pwd);
+  } catch (e) {
+    showAuthError(translateFirebaseError(e.code));
+    document.getElementById('loginBtn').disabled = false;
+    document.getElementById('loginBtn').textContent = 'Entrar';
+  }
+};
+
+window.doRegister = async () => {
+  const name = document.getElementById('regName').value.trim();
+  const email = document.getElementById('regEmail').value.trim();
+  const pwd = document.getElementById('regPassword').value;
+  if (!name || !email || !pwd) return showAuthError('Preencha todos os campos.');
+  if (pwd.length < 6) return showAuthError('Senha deve ter mínimo 6 caracteres.');
+  document.getElementById('registerBtn').disabled = true;
+  document.getElementById('registerBtn').textContent = 'Criando conta...';
+  try {
+    const cred = await createUserWithEmailAndPassword(auth, email, pwd);
+    await updateProfile(cred.user, { displayName: name });
+  } catch (e) {
+    showAuthError(translateFirebaseError(e.code));
+    document.getElementById('registerBtn').disabled = false;
+    document.getElementById('registerBtn').textContent = 'Criar conta';
+  }
+};
+
+window.enterAsGuest = () => {
+  isGuest = true;
+  currentUser = null;
+  hideAuthScreen();
+  initGuestMode();
+};
+
+window.showAuthScreen = () => {
+  document.getElementById('authScreen').classList.remove('hidden');
+};
+
+window.doLogout = async () => {
+  if (isGuest) {
+    isGuest = false;
+    tasks = []; routines = []; challengeConfig = null;
+    document.getElementById('authScreen').classList.remove('hidden');
+    return;
+  }
+  await signOut(auth);
+};
+
+function showAuthError(msg) {
+  const el = document.getElementById('authError');
+  el.textContent = msg;
+  el.classList.add('show');
+}
+
+function translateFirebaseError(code) {
+  const map = {
+    'auth/user-not-found': 'Usuário não encontrado.',
+    'auth/wrong-password': 'Senha incorreta.',
+    'auth/invalid-email': 'E-mail inválido.',
+    'auth/email-already-in-use': 'E-mail já cadastrado.',
+    'auth/weak-password': 'Senha muito fraca.',
+    'auth/too-many-requests': 'Muitas tentativas. Tente novamente mais tarde.',
+    'auth/invalid-credential': 'E-mail ou senha incorretos.',
+  };
+  return map[code] || 'Erro ao autenticar. Tente novamente.';
+}
+
+function hideAuthScreen() {
+  document.getElementById('authScreen').classList.add('hidden');
+}
+
+// ── AUTH STATE OBSERVER ──
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    currentUser = user;
+    isGuest = false;
+    hideAuthScreen();
+    initUserMode(user);
+  } else if (!isGuest) {
+    // Show auth screen only if not guest
+    currentUser = null;
+  }
+});
+
+// ── INIT MODES ──
+function initUserMode(user) {
+  updateSidebarUser(user.displayName || user.email, user.email, false);
+  document.getElementById('saveBanner').classList.add('hidden');
+  document.getElementById('settingName').value = user.displayName || '';
+  document.getElementById('settingEmail').value = user.email || '';
+  subscribeToData(user.uid);
+}
+
+function initGuestMode() {
+  updateSidebarUser('Visitante', 'Sem conta', true);
+  document.getElementById('saveBanner').classList.remove('hidden');
+  document.getElementById('logoutBtn').textContent = 'Sair do modo visitante';
+  tasks = [];
+  routines = [];
+  challengeConfig = null;
+  renderAll();
+}
+
+function updateSidebarUser(name, plan, isGuestMode) {
+  document.getElementById('sidebarName').textContent = name;
+  document.getElementById('sidebarPlan').textContent = isGuestMode ? '⚠️ Visitante' : plan;
+  document.getElementById('sidebarAvatar').textContent = (name || '?').charAt(0).toUpperCase();
+}
+
+window.handleUserCardClick = () => {
+  if (!currentUser && !isGuest) return;
+  navigate(document.querySelector('[data-view="settings"]'));
+};
+
+// ── FIRESTORE SUBSCRIPTIONS ──
+function subscribeToData(uid) {
+  // Tasks
+  if (unsubTasks) unsubTasks();
+  const tRef = collection(db, 'users', uid, 'tasks');
+  unsubTasks = onSnapshot(query(tRef, orderBy('createdAt', 'desc')), snap => {
+    tasks = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderAll();
+  });
+
+  // Routines
+  if (unsubRoutines) unsubRoutines();
+  const rRef = collection(db, 'users', uid, 'routines');
+  unsubRoutines = onSnapshot(query(rRef, orderBy('createdAt', 'asc')), snap => {
+    routines = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    renderAll();
+  });
+
+  // Challenge
+  if (unsubChallenge) unsubChallenge();
+  const cRef = doc(db, 'users', uid, 'config', 'challenge');
+  unsubChallenge = onSnapshot(cRef, snap => {
+    challengeConfig = snap.exists() ? snap.data() : null;
+    renderFinance();
+  });
+}
+
+async function saveToFirestore(collection_path, id, data) {
+  if (!currentUser) return;
+  const ref = doc(db, 'users', currentUser.uid, collection_path, id);
+  await setDoc(ref, data, { merge: true });
+}
+
+// ── TASKS ──
+window.addTask = async () => {
+  const title = document.getElementById('taskTitleInput').value.trim();
+  if (!title) return;
+  const selectedDays = [...document.querySelectorAll('#taskDayChips .day-chip.selected')].map(c => c.dataset.day);
+  const task = {
+    title,
+    category: document.getElementById('taskCategoryInput').value,
+    status: document.getElementById('taskStatusInput').value,
+    done: false,
+    days: selectedDays,
+    createdAt: Date.now()
+  };
+
+  if (currentUser) {
+    await addDoc(collection(db, 'users', currentUser.uid, 'tasks'), task);
+  } else {
+    task.id = 'local_' + Date.now();
+    tasks.unshift(task);
+    renderAll();
+  }
+
+  closeModal('modalTask');
+  document.getElementById('taskTitleInput').value = '';
+  document.querySelectorAll('#taskDayChips .day-chip').forEach(c => c.classList.remove('selected'));
+  toast('Tarefa adicionada!', 'success');
+};
+
+window.toggleTask = async (id) => {
+  const t = tasks.find(x => x.id === id);
+  if (!t) return;
+  t.done = !t.done;
+  t.status = t.done ? 'success' : 'pending';
+
+  if (currentUser) {
+    await updateDoc(doc(db, 'users', currentUser.uid, 'tasks', id), { done: t.done, status: t.status });
+  } else {
+    renderAll();
+  }
+};
+
+window.deleteTask = async (id, e) => {
+  e.stopPropagation();
+  if (currentUser) {
+    await deleteDoc(doc(db, 'users', currentUser.uid, 'tasks', id));
+  } else {
+    tasks = tasks.filter(t => t.id !== id);
+    renderAll();
+  }
+  toast('Tarefa removida.');
+};
+
+function renderTasks(containerId, filterFn) {
+  const container = document.getElementById(containerId);
+  if (!container) return;
+  const filtered = tasks.filter(filterFn);
+  if (!filtered.length) {
+    container.innerHTML = `<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg><p>Nenhuma tarefa aqui.</p></div>`;
+    return;
+  }
+  container.innerHTML = filtered.map(t => taskHTML(t)).join('');
+}
+
+function taskHTML(t) {
+  const daysLabel = t.days && t.days.length ? `<span class="task-days-label">${t.days.join(', ')}</span>` : '';
+  return `
+    <div class="task-item${t.done ? ' done' : ''}" id="task-${t.id}">
+      <div class="task-check" onclick="toggleTask('${t.id}')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+      </div>
+      <div class="task-content">
+        <div class="task-name">${t.title}</div>
+        <div class="task-meta">${t.category} <span class="tag tag-${t.status}" style="padding:2px 7px;font-size:10px">${tagLabel(t.status)}</span> ${daysLabel}</div>
+      </div>
+      <div class="task-delete" onclick="deleteTask('${t.id}', event)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
+      </div>
+    </div>`;
+}
+
+function tagLabel(s) {
+  const m = { pending:'Pending', progress:'In Progress', review:'In Review', success:'Success', failed:'Failed', expired:'Expired' };
+  return m[s] || s;
+}
+
+window.filterTasks = (el) => {
+  document.querySelectorAll('#taskFilterTabs .tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  currentFilter = el.dataset.filter;
+  applyFilter();
+};
+
+function applyFilter() {
+  const fn = currentFilter === 'done' ? t => t.done : currentFilter === 'pending' ? t => !t.done : () => true;
+  renderTasks('all-tasks', fn);
+}
+
+// ── ROUTINES ──
+window.addRoutine = async () => {
+  const name = document.getElementById('routineNameInput').value.trim();
+  const icon = document.getElementById('routineIconInput').value.trim() || '⭐';
+  const days = [...document.querySelectorAll('#routineDayChips .day-chip.selected')].map(c => c.dataset.day);
+  if (!name) return;
+  const routine = { name, icon, days, time: document.getElementById('routineTimeInput').value, createdAt: Date.now() };
+
+  if (currentUser) {
+    await addDoc(collection(db, 'users', currentUser.uid, 'routines'), routine);
+  } else {
+    routine.id = 'local_' + Date.now();
+    routines.push(routine);
+    renderRoutineList();
+    updateBadges();
+  }
+
+  closeModal('modalRoutine');
+  document.getElementById('routineNameInput').value = '';
+  document.getElementById('routineIconInput').value = '';
+  document.getElementById('routineTimeInput').value = '';
+  document.querySelectorAll('#routineDayChips .day-chip').forEach(c => c.classList.remove('selected'));
+  toast('Rotina adicionada!', 'success');
+};
+
+window.deleteRoutine = async (id, e) => {
+  e.stopPropagation();
+  if (currentUser) {
+    await deleteDoc(doc(db, 'users', currentUser.uid, 'routines', id));
+  } else {
+    routines = routines.filter(r => r.id !== id);
+    renderRoutineList();
+    updateBadges();
+  }
+};
+
+function renderRoutineList() {
+  const container = document.getElementById('routineList');
+  if (!routines.length) {
+    container.innerHTML = `<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg><p>Nenhuma rotina cadastrada ainda.</p></div>`;
+    return;
+  }
+  container.innerHTML = routines.map(r => `
+    <div class="routine-item">
+      <div class="routine-icon">${r.icon}</div>
+      <div class="routine-info">
+        <div class="routine-name">${r.name}</div>
+        <div class="routine-days">${r.days && r.days.length ? r.days.join(' · ') : 'Todos os dias'}${r.time ? ' — ' + r.time : ''}</div>
+      </div>
+      <div class="task-delete" onclick="deleteRoutine('${r.id}', event)" style="opacity:1">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6M14 11v6M9 6V4h6v2"/></svg>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderRoutineWeek() {
+  const now = new Date();
+  const dow = now.getDay();
+  const mon = new Date(now); mon.setDate(now.getDate() - (dow === 0 ? 6 : dow - 1));
+  const days = ['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'];
+  const grid = document.getElementById('routineWeekGrid');
+  grid.innerHTML = days.map((d, i) => {
+    const dd = new Date(mon); dd.setDate(mon.getDate() + i);
+    const isToday = dd.toDateString() === now.toDateString();
+    const hasTasks = routines.some(r => r.days && r.days.includes(d));
+    return `<div class="routine-day${isToday?' today':''}${hasTasks?' has-tasks':''}">
+      <div class="rd-name">${d}</div>
+      <div class="rd-num">${dd.getDate()}</div>
+      <div class="rd-dot"></div>
+    </div>`;
+  }).join('');
+  const sun = new Date(mon); sun.setDate(mon.getDate() + 6);
+  document.getElementById('routine-date-range').textContent = `${mon.getDate()} — ${sun.getDate()} de ${now.toLocaleString('pt-BR', {month:'long'})}`;
+}
+
+// ── CHALLENGE FINANCEIRO ──
+window.setupChallenge = async () => {
+  const goal = parseFloat(document.getElementById('challengeGoalInput').value);
+  if (!goal || goal < 52) return toast('Informe um valor mínimo de R$ 52,00', 'error');
+
+  const weekValues = buildWeekValues(goal);
+  const config = { goal, weekValues, deposits: new Array(52).fill(false), createdAt: Date.now() };
+
+  if (currentUser) {
+    await setDoc(doc(db, 'users', currentUser.uid, 'config', 'challenge'), config);
+  } else {
+    challengeConfig = config;
+    renderFinance();
+  }
+};
+
+function buildWeekValues(goal) {
+  // Distribui o valor em 52 semanas com valores arredondados
+  const basePerWeek = goal / 52;
+  const values = [];
+  let total = 0;
+  for (let i = 0; i < 51; i++) {
+    const v = Math.round(basePerWeek * 100) / 100;
+    values.push(v);
+    total += v;
+  }
+  // Última semana acerta o restante
+  values.push(Math.round((goal - total) * 100) / 100);
+  return values;
+}
+
+window.challengeGoalInput_preview = () => {
+  const goal = parseFloat(document.getElementById('challengeGoalInput').value);
+  if (!goal || goal < 52) { document.getElementById('challengePreview').style.display = 'none'; return; }
+  const values = buildWeekValues(goal);
+  document.getElementById('challengePreview').style.display = '';
+  document.getElementById('challengePreviewGrid').innerHTML = values.map((v, i) => `
+    <div class="week-card">
+      <div class="wc-week">Sem ${i+1}</div>
+      <div class="wc-value">R$ ${v.toFixed(2)}</div>
+    </div>
+  `).join('');
+};
+
+document.getElementById('challengeGoalInput').addEventListener('input', window.challengeGoalInput_preview);
+
+window.toggleDeposit = async (week) => {
+  if (!challengeConfig) return;
+  const newDeposits = [...challengeConfig.deposits];
+  newDeposits[week] = !newDeposits[week];
+  challengeConfig.deposits = newDeposits;
+
+  if (currentUser) {
+    await updateDoc(doc(db, 'users', currentUser.uid, 'config', 'challenge'), { deposits: newDeposits });
+  } else {
+    renderFinance();
+  }
+};
+
+window.resetChallenge = async () => {
+  if (!confirm('Resetar todo o progresso do desafio?')) return;
+  if (currentUser) {
+    await deleteDoc(doc(db, 'users', currentUser.uid, 'config', 'challenge'));
+  } else {
+    challengeConfig = null;
+    renderFinance();
+  }
+};
+
+function renderFinance() {
+  const setupEl = document.getElementById('financeSetup');
+  const statsEl = document.getElementById('financeStats');
+
+  if (!challengeConfig) {
+    setupEl.style.display = '';
+    statsEl.style.display = 'none';
+    return;
+  }
+
+  setupEl.style.display = 'none';
+  statsEl.style.display = '';
+
+  const { goal, weekValues, deposits } = challengeConfig;
+  const accumulated = weekValues.reduce((s, v, i) => deposits[i] ? s + v : s, 0);
+  const count = deposits.filter(Boolean).length;
+  const pct = Math.round((count / 52) * 100);
+
+  document.getElementById('finance-total').textContent = `R$ ${accumulated.toFixed(2)}`;
+  document.getElementById('finance-goal-display').textContent = `R$ ${goal.toFixed(2)}`;
+  document.getElementById('finance-progress-text').textContent = `${count} de 52 semanas`;
+  document.getElementById('finance-pct-label').textContent = `${pct}% concluído`;
+  document.getElementById('financeBar').style.width = pct + '%';
+  document.getElementById('challengeTitle').textContent = `Desafio das 52 Semanas — Meta: R$ ${goal.toFixed(2)}`;
+  document.getElementById('stat-deposits').textContent = `R$ ${accumulated.toFixed(2)}`;
+  document.getElementById('stat-deposits-sub').textContent = `de R$ ${goal.toFixed(2)} acumulado`;
+
+  document.getElementById('challengeGrid').innerHTML = weekValues.map((v, i) => `
+    <div class="week-card${deposits[i] ? ' done' : ''}" onclick="toggleDeposit(${i})">
+      <div class="wc-week">Sem ${i+1}</div>
+      <div class="wc-value">R$ ${v.toFixed(2)}</div>
+    </div>
+  `).join('');
+}
+
+// ── RENDER ALL ──
+function renderAll() {
+  updateBadges();
+  renderTasks('dashboard-tasks', (_, i) => i < 5);
+  applyFilter();
+  renderRoutineList();
+  renderRoutineWeek();
+  renderWeekBars();
+  renderCategoryStats();
+}
+
+function updateBadges() {
+  const pending = tasks.filter(t => !t.done).length;
+  const done = tasks.filter(t => t.done).length;
+  const total = tasks.length;
+  document.getElementById('badge-tasks').textContent = pending;
+  document.getElementById('badge-routine').textContent = routines.length;
+  document.getElementById('stat-done').textContent = done;
+  document.getElementById('stat-total').textContent = total;
+  document.getElementById('stat-overall').textContent = total ? Math.round((done / total) * 100) + '%' : '0%';
+  document.getElementById('stat-routines').textContent = routines.length;
+}
+
+function renderWeekBars() {
+  const wrap = document.getElementById('weekBars');
+  const labWrap = document.getElementById('weekLabels');
+  const weekDays = ['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'];
+  const today = new Date().getDay();
+  const todayIdx = today === 0 ? 6 : today - 1;
+
+  // Count tasks per day based on day assignment
+  const counts = weekDays.map(d => tasks.filter(t => t.done && t.days && t.days.includes(d)).length);
+  const maxVal = Math.max(...counts, 1);
+
+  wrap.innerHTML = weekDays.map((d, i) => `
+    <div class="week-bar-wrap">
+      <div class="week-bar" style="height:${Math.max(10, Math.round((counts[i] / maxVal) * 100))}%">
+        <div class="week-bar-fill${i === todayIdx ? ' today' : ''}" style="height:${Math.max(10, Math.round((counts[i] / maxVal) * 100))}%"></div>
+      </div>
+    </div>`).join('');
+
+  labWrap.innerHTML = weekDays.map((d, i) => `<span style="font-size:10px;color:${i===todayIdx?'var(--black)':'var(--gray-400)'};font-weight:${i===todayIdx?'600':'400'}">${d}</span>`).join('');
+}
+
+function renderCategoryStats() {
+  const categories = {};
+  tasks.forEach(t => {
+    if (!categories[t.category]) categories[t.category] = { total: 0, done: 0 };
+    categories[t.category].total++;
+    if (t.done) categories[t.category].done++;
+  });
+
+  const container = document.getElementById('categoryStats');
+  const entries = Object.entries(categories);
+  if (!entries.length) {
+    container.innerHTML = `<div style="font-size:13px;color:var(--gray-400);text-align:center;padding:20px">Nenhuma tarefa ainda.</div>`;
+    return;
+  }
+
+  container.innerHTML = entries.map(([cat, { total, done }]) => {
+    const pct = total ? Math.round((done / total) * 100) : 0;
+    return `<div class="habit-item">
+      <div class="habit-icon" style="background:var(--gray-100)">${cat.split(' ')[0]}</div>
+      <div class="habit-info">
+        <div class="habit-name">${cat}</div>
+        <div class="habit-bar-track"><div class="habit-bar-fill" style="width:${pct}%"></div></div>
+      </div>
+      <div class="habit-pct">${pct}%</div>
+    </div>`;
+  }).join('');
+}
+
+// ── NAVIGATION ──
+const views = {
+  dashboard: { title: 'Dashboard', sub: 'Visão geral do seu progresso' },
+  routine:   { title: 'Rotina', sub: 'Seus hábitos e recorrências' },
+  tasks:     { title: 'Tasks', sub: 'Organize suas tarefas' },
+  finance:   { title: 'Desafio Financeiro', sub: 'Guarde dinheiro semana a semana' },
+  settings:  { title: 'Configurações', sub: 'Perfil e preferências' }
+};
+
+window.navigate = (el) => {
+  if (!el) return;
+  const v = el.dataset.view;
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.querySelectorAll('.view').forEach(vi => vi.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('view-' + v).classList.add('active');
+  document.getElementById('pageTitle').textContent = views[v].title;
+  document.getElementById('pageSub').textContent = views[v].sub;
+
+  // Topbar button
+  const btn = document.getElementById('btnAddMain');
+  if (v === 'tasks') { btn.style.display = ''; btn.onclick = openAddModal; btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Nova Tarefa`; }
+  else if (v === 'routine') { btn.style.display = ''; btn.onclick = openRoutineModal; btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Nova Rotina`; }
+  else if (v === 'dashboard') { btn.style.display = ''; btn.onclick = openAddModal; btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Nova Tarefa`; }
+  else btn.style.display = 'none';
+
+  closeSidebar();
+  if (v === 'finance') renderFinance();
+  if (v === 'routine') { renderRoutineList(); renderRoutineWeek(); }
+};
+
+// ── MODALS ──
+window.openAddModal = () => document.getElementById('modalTask').classList.add('open');
+window.openRoutineModal = () => document.getElementById('modalRoutine').classList.add('open');
+window.closeModal = (id) => document.getElementById(id).classList.remove('open');
+window.closeModalOutside = (e, id) => { if (e.target === e.currentTarget) closeModal(id); };
+
+// Day chips
+document.querySelectorAll('.day-chips').forEach(wrap => {
+  wrap.querySelectorAll('.day-chip').forEach(chip => {
+    chip.addEventListener('click', () => chip.classList.toggle('selected'));
+  });
+});
+
+// ── SETTINGS ──
+window.saveSettings = async () => {
+  if (!currentUser) return;
+  const name = document.getElementById('settingName').value.trim();
+  await updateProfile(currentUser, { displayName: name });
+  updateSidebarUser(name, currentUser.email, false);
+  toast('Configurações salvas!', 'success');
+};
+
+// ── TOAST ──
+function toast(msg, type = '') {
+  const t = document.createElement('div');
+  t.className = `toast${type ? ' ' + type : ''}`;
+  t.innerHTML = `${type === 'success' ? '✓' : type === 'error' ? '✕' : 'ℹ'} ${msg}`;
+  document.getElementById('toastWrap').appendChild(t);
+  setTimeout(() => { t.style.animation = 'toast-out 0.3s ease forwards'; setTimeout(() => t.remove(), 300); }, 2500);
+}
+
+// ── MOBILE SIDEBAR ──
+document.getElementById('menuToggle').addEventListener('click', () => {
+  document.getElementById('sidebar').classList.toggle('open');
+  document.getElementById('overlayBg').classList.toggle('open');
+});
+document.getElementById('overlayBg').addEventListener('click', closeSidebar);
+
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('overlayBg').classList.remove('open');
+}
+
+window.closeSidebar = closeSidebar;
+
+// ── INIT ──
+renderAll();
+</script>
+</body>
+</html>
