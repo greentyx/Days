@@ -3,8 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Days — Productive Life</title>
+<title>Days - Vida Produtiva</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="shortcut icon" href="assets/logomarca.png" type="image/x-icon">
 <style>
   :root {
     --black: #000000;
@@ -548,6 +549,169 @@
     .deposit-grid { grid-template-columns: repeat(5, 1fr); }
   }
 
+  /* ── HOJE ── */
+  .hoje-hero {
+    background: var(--black); border-radius: var(--radius);
+    padding: 28px 28px 24px; margin-bottom: 20px;
+    display: flex; align-items: center; justify-content: space-between; gap: 20px;
+    animation: fade-up 0.3s ease both;
+  }
+  .hoje-date { color: var(--gray-500); font-size: 13px; margin-bottom: 4px; }
+  .hoje-title { color: var(--white); font-size: 26px; font-weight: 600; letter-spacing: -0.8px; margin-bottom: 12px; }
+  .hoje-meta { display: flex; gap: 20px; }
+  .hoje-meta-item { text-align: center; }
+  .hoje-meta-num { font-size: 22px; font-weight: 600; color: var(--white); font-family: 'DM Mono', monospace; letter-spacing: -0.5px; }
+  .hoje-meta-label { font-size: 11px; color: var(--gray-500); margin-top: 2px; }
+  .hoje-progress-ring { flex-shrink: 0; }
+  .hoje-ring-bg { fill: none; stroke: rgba(255,255,255,0.1); }
+  .hoje-ring-fill { fill: none; stroke: white; stroke-linecap: round; transition: stroke-dashoffset 1s cubic-bezier(0.4,0,0.2,1); }
+  .hoje-ring-text { fill: white; font-family: 'DM Mono', monospace; font-size: 14px; font-weight: 600; text-anchor: middle; dominant-baseline: middle; }
+
+  .hoje-section-title { font-size: 12px; font-weight: 600; color: var(--gray-400); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+
+  .hoje-task-item {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 14px; border-radius: 10px; cursor: pointer;
+    transition: background var(--transition); border: 1px solid transparent;
+  }
+  .hoje-task-item:hover { background: var(--gray-50); border-color: var(--gray-100); }
+  .hoje-task-item.done { opacity: 0.4; }
+  .hoje-task-check {
+    width: 20px; height: 20px; border-radius: 6px;
+    border: 1.5px solid var(--gray-300); flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+    transition: all var(--transition);
+  }
+  .hoje-task-item.done .hoje-task-check { background: var(--black); border-color: var(--black); }
+  .hoje-task-name { font-size: 14px; font-weight: 400; flex: 1; }
+  .hoje-task-item.done .hoje-task-name { text-decoration: line-through; }
+  .hoje-task-cat { font-size: 11px; color: var(--gray-400); }
+
+  .hoje-routine-chip {
+    display: flex; align-items: center; gap: 8px;
+    padding: 10px 14px; border-radius: 10px; background: var(--gray-50);
+    border: 1px solid var(--gray-100); font-size: 13px; font-weight: 500;
+    transition: all var(--transition);
+  }
+  .hoje-routine-chip.done-r { background: var(--black); color: var(--white); border-color: var(--black); }
+  .hoje-routines-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 8px; }
+
+  /* ── AGENDA ── */
+  .agenda-grid {
+    display: grid; grid-template-columns: 56px 1fr; gap: 0;
+    position: relative;
+  }
+  .agenda-time-col { display: flex; flex-direction: column; }
+  .agenda-time-slot {
+    height: 64px; display: flex; align-items: flex-start; justify-content: flex-end;
+    padding-right: 12px; padding-top: 2px;
+    font-size: 11px; font-family: 'DM Mono', monospace; color: var(--gray-400);
+    flex-shrink: 0;
+  }
+  .agenda-events-col { position: relative; border-left: 1.5px solid var(--gray-100); }
+  .agenda-slot-line {
+    height: 64px; border-bottom: 1px solid var(--gray-100); position: relative;
+    transition: background var(--transition); cursor: pointer;
+  }
+  .agenda-slot-line:hover { background: var(--gray-50); }
+  .agenda-slot-line .add-hint {
+    position: absolute; left: 8px; top: 50%; transform: translateY(-50%);
+    font-size: 11px; color: var(--gray-300); opacity: 0;
+    transition: opacity var(--transition); pointer-events: none;
+  }
+  .agenda-slot-line:hover .add-hint { opacity: 1; }
+
+  .agenda-event {
+    position: absolute; left: 6px; right: 6px;
+    border-radius: 8px; background: var(--black); color: var(--white);
+    padding: 6px 10px; font-size: 12px; font-weight: 500;
+    cursor: pointer; z-index: 2; overflow: hidden;
+    transition: opacity var(--transition), transform var(--transition);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  }
+  .agenda-event:hover { opacity: 0.85; transform: scale(1.01); }
+  .agenda-event-time { font-size: 10px; opacity: 0.6; font-family: 'DM Mono', monospace; margin-bottom: 2px; }
+  .agenda-event-delete {
+    position: absolute; right: 6px; top: 6px;
+    font-size: 14px; opacity: 0; cursor: pointer;
+    transition: opacity var(--transition);
+  }
+  .agenda-event:hover .agenda-event-delete { opacity: 0.7; }
+
+  .agenda-now-line {
+    position: absolute; left: 0; right: 0; height: 2px;
+    background: #ef4444; z-index: 3; pointer-events: none;
+  }
+  .agenda-now-line::before {
+    content: ''; position: absolute; left: -4px; top: -3px;
+    width: 8px; height: 8px; border-radius: 50%; background: #ef4444;
+  }
+
+  .agenda-colors { display: flex; gap: 8px; flex-wrap: wrap; }
+  .agenda-color-opt {
+    width: 24px; height: 24px; border-radius: 50%; cursor: pointer;
+    border: 2px solid transparent; transition: all var(--transition);
+  }
+  .agenda-color-opt.selected { border-color: var(--black); transform: scale(1.2); }
+
+  /* ── POMODORO ── */
+  .pomodoro-wrap {
+    max-width: 440px; margin: 0 auto; text-align: center;
+    animation: fade-up 0.3s ease both;
+  }
+  .pomodoro-mode-tabs { display: flex; gap: 6px; justify-content: center; margin-bottom: 32px; }
+  .pom-tab {
+    padding: 8px 18px; border-radius: 99px; font-size: 13px; font-weight: 500;
+    cursor: pointer; border: 1.5px solid var(--gray-200); color: var(--gray-500);
+    transition: all var(--transition);
+  }
+  .pom-tab.active { background: var(--black); color: var(--white); border-color: var(--black); }
+
+  .pomodoro-ring-wrap {
+    position: relative; width: 240px; height: 240px; margin: 0 auto 32px;
+  }
+  .pom-ring { width: 240px; height: 240px; transform: rotate(-90deg); }
+  .pom-ring-bg { fill: none; stroke: var(--gray-100); stroke-width: 12; }
+  .pom-ring-fill { fill: none; stroke: var(--black); stroke-width: 12; stroke-linecap: round; transition: stroke-dashoffset 1s linear; }
+  .pom-ring-fill.paused { stroke: var(--gray-300); }
+  .pom-center {
+    position: absolute; inset: 0; display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+  }
+  .pom-time { font-size: 52px; font-weight: 600; font-family: 'DM Mono', monospace; letter-spacing: -2px; line-height: 1; }
+  .pom-label { font-size: 13px; color: var(--gray-400); margin-top: 6px; }
+
+  .pom-controls { display: flex; gap: 12px; justify-content: center; margin-bottom: 32px; }
+  .pom-btn {
+    width: 56px; height: 56px; border-radius: 50%; border: none; cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'DM Sans', sans-serif; transition: all var(--transition);
+  }
+  .pom-btn-main { background: var(--black); color: var(--white); width: 64px; height: 64px; }
+  .pom-btn-main:hover { background: var(--gray-800); transform: scale(1.05); }
+  .pom-btn-secondary { background: var(--gray-100); color: var(--gray-700); }
+  .pom-btn-secondary:hover { background: var(--gray-200); }
+
+  .pom-sessions { display: flex; gap: 8px; justify-content: center; margin-bottom: 24px; }
+  .pom-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--gray-200); transition: background 0.3s ease; }
+  .pom-dot.done { background: var(--black); }
+
+  .pom-task-select {
+    background: var(--white); border: 1.5px solid var(--gray-200);
+    border-radius: 10px; padding: 10px 14px; font-size: 13px;
+    font-family: 'DM Sans', sans-serif; color: var(--black); width: 100%;
+    outline: none; cursor: pointer; transition: border-color var(--transition);
+  }
+  .pom-task-select:focus { border-color: var(--black); }
+
+  .pom-log { display: flex; flex-direction: column; gap: 6px; margin-top: 16px; text-align: left; }
+  .pom-log-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 12px; border-radius: 8px; background: var(--gray-50);
+    font-size: 12px; color: var(--gray-600);
+  }
+  .pom-log-time { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--gray-400); margin-left: auto; }
+
   /* ── CHALLENGE WEEK CARDS ── */
   .week-challenge-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 8px; }
   .week-card {
@@ -582,6 +746,15 @@
       <span class="auth-logo-text">Days</span>
     </div>
 
+    <div style="margin-bottom:20px">
+      <div style="font-size:19px;font-weight:600;letter-spacing:-0.5px;margin-bottom:6px">Organize sua vida com Days</div>
+      <div style="font-size:13px;color:var(--gray-400);margin-bottom:12px">Tarefas, rotinas e desafio financeiro — tudo em um lugar.</div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <span style="font-size:11px;background:var(--gray-100);padding:3px 9px;border-radius:99px;color:var(--gray-600)">✓ Tarefas</span>
+        <span style="font-size:11px;background:var(--gray-100);padding:3px 9px;border-radius:99px;color:var(--gray-600)">✓ Rotinas</span>
+        <span style="font-size:11px;background:var(--gray-100);padding:3px 9px;border-radius:99px;color:var(--gray-600)">✓ Desafio financeiro</span>
+      </div>
+    </div>
     <div class="auth-tabs">
       <div class="auth-tab active" onclick="switchAuthTab('login')">Entrar</div>
       <div class="auth-tab" onclick="switchAuthTab('register')">Criar conta</div>
@@ -619,7 +792,7 @@
 
     <div class="auth-guest">
       Prefere não criar conta? <a onclick="enterAsGuest()">Continuar como visitante</a>
-      <div style="margin-top:8px;font-size:11px;color:var(--gray-300)">⚠️ Dados não serão salvos ao fechar o site</div>
+      <div style="margin-top:8px;font-size:11px;color:var(--gray-300)"><img src="https://img.icons8.com/ios-filled/12/f0a500/warning--v1.png" style="vertical-align:middle;margin-right:3px"> Dados não serão salvos ao fechar o site</div>
     </div>
   </div>
 </div>
@@ -679,6 +852,28 @@
   </nav>
 
   <nav class="nav-section">
+    <div class="nav-label">Tempo</div>
+    <div class="nav-item" data-view="hoje" onclick="navigate(this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/>
+      </svg>
+      Hoje
+    </div>
+    <div class="nav-item" data-view="agenda" onclick="navigate(this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+      </svg>
+      Agenda
+    </div>
+    <div class="nav-item" data-view="pomodoro" onclick="navigate(this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+      </svg>
+      Pomodoro
+    </div>
+  </nav>
+
+  <nav class="nav-section">
     <div class="nav-label">Config</div>
     <div class="nav-item" data-view="settings" onclick="navigate(this)">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
@@ -720,12 +915,25 @@
 
     <!-- SAVE BANNER (visitante) -->
     <div class="save-banner hidden" id="saveBanner">
-      <span>⚠️ Você está como <strong>visitante</strong> — seus dados não são salvos automaticamente.</span>
+      <span><img src="https://img.icons8.com/ios-filled/14/f0a500/warning--v1.png" style="vertical-align:middle;margin-right:4px"> Você está como <strong>visitante</strong> — seus dados não são salvos automaticamente.</span>
       <button class="btn btn-primary" style="font-size:12px;padding:7px 12px;white-space:nowrap" onclick="showAuthScreen()">Criar conta grátis</button>
     </div>
 
     <!-- ── DASHBOARD ── -->
     <div class="view active" id="view-dashboard">
+      <!-- Progresso do dia -->
+      <div id="dayProgressCard" style="background:var(--black);border-radius:var(--radius);padding:18px 22px;margin-bottom:20px;display:flex;align-items:center;gap:16px;animation:fade-up 0.4s ease both">
+        <div style="flex:1">
+          <div style="font-size:12px;color:var(--gray-500);margin-bottom:4px">Progresso de hoje</div>
+          <div style="font-size:13px;color:var(--gray-300)" id="dayProgressLabel">Carregando...</div>
+          <div style="height:6px;background:rgba(255,255,255,0.1);border-radius:99px;margin-top:8px;overflow:hidden">
+            <div id="dayProgressBar" style="height:100%;background:white;border-radius:99px;transition:width 1s ease;width:0%"></div>
+          </div>
+        </div>
+        <div style="text-align:right;flex-shrink:0">
+          <div style="font-size:28px;font-weight:600;color:white;font-family:'DM Mono',monospace;letter-spacing:-1px" id="dayProgressPct">0%</div>
+        </div>
+      </div>
       <div class="stats-row">
         <div class="stat-card dark">
           <div class="stat-label">Progresso Geral</div>
@@ -780,10 +988,16 @@
 
     <!-- ── TASKS ── -->
     <div class="view" id="view-tasks">
-      <div class="tabs" id="taskFilterTabs">
-        <div class="tab active" data-filter="all" onclick="filterTasks(this)">Todas</div>
-        <div class="tab" data-filter="pending" onclick="filterTasks(this)">Pendentes</div>
-        <div class="tab" data-filter="done" onclick="filterTasks(this)">Concluídas</div>
+      <div style="display:flex;gap:10px;align-items:center;margin-bottom:16px;flex-wrap:wrap">
+        <div style="flex:1;min-width:200px;position:relative">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" style="position:absolute;left:12px;top:50%;transform:translateY(-50%);width:16px;height:16px;color:var(--gray-400)"><circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/></svg>
+          <input type="text" id="taskSearchInput" placeholder="Buscar tarefa..." oninput="searchTasks(this.value)" style="width:100%;padding:9px 14px 9px 36px;border-radius:10px;border:1.5px solid var(--gray-200);font-size:14px;font-family:'DM Sans',sans-serif;outline:none;transition:border 0.2s" onfocus="this.style.borderColor='var(--gray-400)'" onblur="this.style.borderColor='var(--gray-200)'">
+        </div>
+        <div class="tabs" id="taskFilterTabs" style="margin:0">
+          <div class="tab active" data-filter="all" onclick="filterTasks(this)">Todas</div>
+          <div class="tab" data-filter="pending" onclick="filterTasks(this)">Pendentes</div>
+          <div class="tab" data-filter="done" onclick="filterTasks(this)">Concluídas</div>
+        </div>
       </div>
       <div class="card">
         <div class="tasks-list" id="all-tasks"></div>
@@ -818,7 +1032,7 @@
     <div class="view" id="view-finance">
       <!-- Setup inicial se não configurado -->
       <div id="financeSetup" class="finance-setup">
-        <h3>🎯 Configure seu Desafio Anual</h3>
+        <h3><img src="https://img.icons8.com/ios-filled/18/000000/goal.png" style="vertical-align:middle;margin-right:6px">Configure seu Desafio Anual</h3>
         <p>Defina quanto quer guardar até o fim do ano e veja o plano semana a semana.</p>
         <div style="display:flex;gap:12px;justify-content:center;align-items:flex-end;flex-wrap:wrap">
           <div class="field" style="margin:0;min-width:200px">
@@ -886,6 +1100,131 @@
       </div>
     </div>
 
+    <!-- ── HOJE ── -->
+    <div class="view" id="view-hoje">
+      <div class="hoje-hero">
+        <div>
+          <div class="hoje-date" id="hoje-date-label">—</div>
+          <div class="hoje-title">Bom dia! 👋</div>
+          <div class="hoje-meta">
+            <div class="hoje-meta-item">
+              <div class="hoje-meta-num" id="hoje-tasks-count">0</div>
+              <div class="hoje-meta-label">Tarefas</div>
+            </div>
+            <div class="hoje-meta-item">
+              <div class="hoje-meta-num" id="hoje-done-count">0</div>
+              <div class="hoje-meta-label">Concluídas</div>
+            </div>
+            <div class="hoje-meta-item">
+              <div class="hoje-meta-num" id="hoje-routines-count">0</div>
+              <div class="hoje-meta-label">Rotinas</div>
+            </div>
+          </div>
+        </div>
+        <div class="hoje-progress-ring">
+          <svg width="80" height="80" viewBox="0 0 80 80">
+            <circle class="hoje-ring-bg" cx="40" cy="40" r="32" stroke-width="8"/>
+            <circle class="hoje-ring-fill" id="hoje-ring" cx="40" cy="40" r="32" stroke-width="8"
+              stroke-dasharray="201" stroke-dashoffset="201" transform="rotate(-90 40 40)"/>
+            <text class="hoje-ring-text" x="40" y="40" id="hoje-ring-pct">0%</text>
+          </svg>
+        </div>
+      </div>
+
+      <div class="grid-2" style="margin-bottom:20px">
+        <div class="card">
+          <div class="card-header" style="margin-bottom:14px">
+            <div>
+              <div class="card-title">Tarefas de Hoje</div>
+              <div class="card-sub">Pendentes para o dia</div>
+            </div>
+          </div>
+          <div id="hoje-tasks-list"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-header" style="margin-bottom:14px">
+            <div>
+              <div class="card-title">Rotinas de Hoje</div>
+              <div class="card-sub" id="hoje-weekday-label">—</div>
+            </div>
+          </div>
+          <div class="hoje-routines-grid" id="hoje-routines-list"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── AGENDA ── -->
+    <div class="view" id="view-agenda">
+      <div style="display:flex;gap:12px;align-items:center;margin-bottom:20px;flex-wrap:wrap">
+        <div class="tabs" id="agendaDayTabs" style="margin:0;flex:1;overflow-x:auto"></div>
+        <button class="btn btn-primary" onclick="openAgendaModal()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Novo Bloco
+        </button>
+      </div>
+
+      <div class="card" style="overflow:hidden;padding:0">
+        <div style="padding:20px 24px 12px;border-bottom:1px solid var(--gray-100);display:flex;align-items:center;justify-content:space-between">
+          <div>
+            <div class="card-title" id="agenda-day-title">Segunda-feira</div>
+            <div class="card-sub" id="agenda-day-sub">Hoje</div>
+          </div>
+          <div style="font-size:12px;color:var(--gray-400)" id="agenda-event-count">0 blocos</div>
+        </div>
+        <div style="padding:16px 20px;max-height:600px;overflow-y:auto" id="agendaScrollArea">
+          <div class="agenda-grid" id="agendaGrid"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── POMODORO ── -->
+    <div class="view" id="view-pomodoro">
+      <div class="pomodoro-wrap">
+        <div class="pomodoro-mode-tabs">
+          <div class="pom-tab active" data-mode="focus" onclick="setPomMode('focus',this)">Foco</div>
+          <div class="pom-tab" data-mode="short" onclick="setPomMode('short',this)">Pausa curta</div>
+          <div class="pom-tab" data-mode="long" onclick="setPomMode('long',this)">Pausa longa</div>
+        </div>
+
+        <div class="pomodoro-ring-wrap">
+          <svg class="pom-ring" viewBox="0 0 240 240">
+            <circle class="pom-ring-bg" cx="120" cy="120" r="104"/>
+            <circle class="pom-ring-fill" id="pomRingFill" cx="120" cy="120" r="104"
+              stroke-dasharray="653" stroke-dashoffset="0"/>
+          </svg>
+          <div class="pom-center">
+            <div class="pom-time" id="pomTime">25:00</div>
+            <div class="pom-label" id="pomLabel">Foco profundo</div>
+          </div>
+        </div>
+
+        <div class="pom-sessions" id="pomSessions"></div>
+
+        <div class="pom-controls">
+          <button class="pom-btn pom-btn-secondary" onclick="pomReset()" title="Reiniciar">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.5"/></svg>
+          </button>
+          <button class="pom-btn pom-btn-main" id="pomPlayBtn" onclick="pomToggle()">
+            <svg width="26" height="26" viewBox="0 0 24 24" fill="currentColor" id="pomPlayIcon"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          </button>
+          <button class="pom-btn pom-btn-secondary" onclick="pomSkip()" title="Pular">
+            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19"/></svg>
+          </button>
+        </div>
+
+        <div class="card" style="text-align:left">
+          <div class="card-header" style="margin-bottom:12px">
+            <div class="card-title">Focando em</div>
+          </div>
+          <select class="pom-task-select" id="pomTaskSelect">
+            <option value="">— Nenhuma tarefa selecionada —</option>
+          </select>
+          <div class="pom-log" id="pomLog"></div>
+        </div>
+      </div>
+    </div>
+
   </div><!-- /content -->
 </main>
 
@@ -900,19 +1239,19 @@
     <div class="field">
       <div class="field-label">Categoria</div>
       <select class="field-input field-select" id="taskCategoryInput">
-        <option value="📚 Estudo">📚 Estudo</option>
-        <option value="💪 Saúde">💪 Saúde</option>
-        <option value="💼 Trabalho">💼 Trabalho</option>
-        <option value="🏠 Pessoal">🏠 Pessoal</option>
-        <option value="💡 Outros">💡 Outros</option>
+      <option value="📚 Estudo">Estudo</option>
+        <option value="💪 Saúde">Saúde</option>
+        <option value="💼 Trabalho">Trabalho</option>
+        <option value="🏠 Pessoal">Pessoal</option>
+        <option value="💡 Outros">Outros</option>
       </select>
     </div>
     <div class="field">
       <div class="field-label">Status</div>
       <select class="field-input field-select" id="taskStatusInput">
-        <option value="pending">Pending</option>
-        <option value="progress">In Progress</option>
-        <option value="review">In Review</option>
+        <option value="pending">Pendente</option>
+        <option value="progress">Em andamento</option>
+        <option value="review">Revisão</option>
       </select>
     </div>
     <div class="field">
@@ -930,6 +1269,42 @@
     <div class="modal-actions">
       <button class="btn btn-ghost" onclick="closeModal('modalTask')">Cancelar</button>
       <button class="btn btn-primary" onclick="addTask()">Adicionar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Agenda Event -->
+<div class="modal-overlay" id="modalAgenda" onclick="closeModalOutside(event,'modalAgenda')">
+  <div class="modal">
+    <div class="modal-title">Novo Bloco de Tempo</div>
+    <div class="field">
+      <div class="field-label">Título</div>
+      <input class="field-input" type="text" id="agendaTitleInput" placeholder="Ex: Reunião de equipe">
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div class="field">
+        <div class="field-label">Início</div>
+        <input class="field-input" type="time" id="agendaStartInput" value="09:00">
+      </div>
+      <div class="field">
+        <div class="field-label">Fim</div>
+        <input class="field-input" type="time" id="agendaEndInput" value="10:00">
+      </div>
+    </div>
+    <div class="field">
+      <div class="field-label">Cor</div>
+      <div class="agenda-colors" id="agendaColorPicker">
+        <div class="agenda-color-opt selected" data-color="#000000" style="background:#000000" onclick="selectAgendaColor(this)"></div>
+        <div class="agenda-color-opt" data-color="#2563eb" style="background:#2563eb" onclick="selectAgendaColor(this)"></div>
+        <div class="agenda-color-opt" data-color="#16a34a" style="background:#16a34a" onclick="selectAgendaColor(this)"></div>
+        <div class="agenda-color-opt" data-color="#dc2626" style="background:#dc2626" onclick="selectAgendaColor(this)"></div>
+        <div class="agenda-color-opt" data-color="#9333ea" style="background:#9333ea" onclick="selectAgendaColor(this)"></div>
+        <div class="agenda-color-opt" data-color="#ea580c" style="background:#ea580c" onclick="selectAgendaColor(this)"></div>
+      </div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('modalAgenda')">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveAgendaEvent()">Adicionar</button>
     </div>
   </div>
 </div>
@@ -970,34 +1345,16 @@
 </div>
 
 <script type="module">
-// ── FIREBASE IMPORTS ──
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+// ── FIREBASE ── importado de js/firebase-config.js
 import {
-  getAuth, onAuthStateChanged,
+  auth, db,
+  onAuthStateChanged,
   signInWithEmailAndPassword, createUserWithEmailAndPassword,
-  signOut, updateProfile
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-import {
-  getFirestore, doc, setDoc, getDoc,
+  signOut, updateProfile,
+  doc, setDoc, getDoc,
   collection, addDoc, updateDoc, deleteDoc,
-  onSnapshot, query, orderBy, getDocs
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-// ── FIREBASE CONFIG ──
-// ⚠️ SUBSTITUA com suas credenciais do Firebase Console
-const firebaseConfig = {
-  apiKey: "AIzaSyCS8GquSfx2zSiSxnSQo02y3iwxdQWp9ZU",
-  authDomain: "days-one.firebaseapp.com",
-  projectId: "days-one",
-  storageBucket: "days-one.firebasestorage.app",
-  messagingSenderId: "856398282137",
-  appId: "1:856398282137:web:ee66ddf02e9caf55d22708",
-  measurementId: "G-YL1V2MVM8J"
-};
-
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+  onSnapshot, query, orderBy
+} from "./js/firebase-config.js";
 
 // ── STATE ──
 let currentUser = null;
@@ -1171,7 +1528,20 @@ async function saveToFirestore(collection_path, id, data) {
   await setDoc(ref, data, { merge: true });
 }
 
-// ── TASKS ──
+const CATEGORY_ICONS = {
+  '📚 Estudo':   'https://img.icons8.com/ios-filled/14/000000/book.png',
+  '💪 Saúde':    'https://img.icons8.com/ios-filled/14/000000/biceps.png',
+  '💼 Trabalho': 'https://img.icons8.com/ios-filled/14/000000/briefcase.png',
+  '🏠 Pessoal':  'https://img.icons8.com/ios-filled/14/000000/home.png',
+  '💡 Outros':   'https://img.icons8.com/ios-filled/14/000000/idea.png',
+};
+
+function categoryIcon(cat, size = 14) {
+  const url = CATEGORY_ICONS[cat];
+  return url ? `<img src="${url.replace('/14/', '/' + size + '/')}" style="vertical-align:middle;margin-right:3px;width:${size}px;height:${size}px">` : '';
+}
+
+
 window.addTask = async () => {
   const title = document.getElementById('taskTitleInput').value.trim();
   if (!title) return;
@@ -1228,7 +1598,8 @@ function renderTasks(containerId, filterFn) {
   if (!container) return;
   const filtered = tasks.filter(filterFn);
   if (!filtered.length) {
-    container.innerHTML = `<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg><p>Nenhuma tarefa aqui.</p></div>`;
+    const isDashboard = containerId === 'dashboard-tasks';
+    container.innerHTML = `<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg><p>${isDashboard ? 'Nenhuma tarefa ainda. Clique em "Nova Tarefa" para começar.' : 'Nenhuma tarefa aqui.'}</p></div>`;
     return;
   }
   container.innerHTML = filtered.map(t => taskHTML(t)).join('');
@@ -1243,7 +1614,7 @@ function taskHTML(t) {
       </div>
       <div class="task-content">
         <div class="task-name">${t.title}</div>
-        <div class="task-meta">${t.category} <span class="tag tag-${t.status}" style="padding:2px 7px;font-size:10px">${tagLabel(t.status)}</span> ${daysLabel}</div>
+        <div class="task-meta">${categoryIcon(t.category)}${t.category.replace(/^[^\s]+\s/, '')} <span class="tag tag-${t.status}" style="padding:2px 7px;font-size:10px">${tagLabel(t.status)}</span> ${daysLabel}</div>
       </div>
       <div class="task-delete" onclick="deleteTask('${t.id}', event)">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg>
@@ -1252,7 +1623,7 @@ function taskHTML(t) {
 }
 
 function tagLabel(s) {
-  const m = { pending:'Pending', progress:'In Progress', review:'In Review', success:'Success', failed:'Failed', expired:'Expired' };
+  const m = { pending:'Pendente', progress:'Em andamento', review:'Revisão', success:'Concluída', failed:'Falhou', expired:'Expirada' };
   return m[s] || s;
 }
 
@@ -1263,9 +1634,41 @@ window.filterTasks = (el) => {
   applyFilter();
 };
 
+let taskSearchQuery = '';
+window.searchTasks = (q) => {
+  taskSearchQuery = q.toLowerCase();
+  applyFilter();
+};
+
 function applyFilter() {
-  const fn = currentFilter === 'done' ? t => t.done : currentFilter === 'pending' ? t => !t.done : () => true;
-  renderTasks('all-tasks', fn);
+  let filtered = tasks;
+  if (currentFilter === 'done') filtered = filtered.filter(t => t.done);
+  else if (currentFilter === 'pending') filtered = filtered.filter(t => !t.done);
+  if (taskSearchQuery) filtered = filtered.filter(t => t.title.toLowerCase().includes(taskSearchQuery));
+  const container = document.getElementById('all-tasks');
+  if (!container) return;
+  if (!filtered.length) {
+    container.innerHTML = `<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/></svg><p>${taskSearchQuery ? 'Nenhuma tarefa encontrada.' : 'Nenhuma tarefa aqui.'}</p></div>`;
+    return;
+  }
+  container.innerHTML = filtered.map(t => taskHTML(t)).join('');
+}
+
+function updateDayProgress() {
+  const total = tasks.length;
+  const done = tasks.filter(t => t.done).length;
+  const pct = total ? Math.round((done / total) * 100) : 0;
+  const bar = document.getElementById('dayProgressBar');
+  const pctEl = document.getElementById('dayProgressPct');
+  const label = document.getElementById('dayProgressLabel');
+  if (bar) bar.style.width = pct + '%';
+  if (pctEl) pctEl.textContent = pct + '%';
+  if (label) {
+    if (!total) label.textContent = 'Adicione suas primeiras tarefas para começar.';
+    else if (pct === 100) label.textContent = 'Parabéns! Todas as tarefas concluídas hoje! 🎉';
+    else if (pct >= 50) label.textContent = `${done} de ${total} tarefas concluídas — mais da metade!`;
+    else label.textContent = `${done} de ${total} tarefas concluídas.`;
+  }
 }
 
 // ── ROUTINES ──
@@ -1448,9 +1851,332 @@ function renderFinance() {
   `).join('');
 }
 
+// ── HOJE ──
+const weekDayNames = ['Domingo','Segunda-feira','Terça-feira','Quarta-feira','Quinta-feira','Sexta-feira','Sábado'];
+const weekDayShort = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+
+function renderHoje() {
+  const now = new Date();
+  const dayIdx = now.getDay();
+  const dayShort = weekDayShort[dayIdx];
+  const dayName = weekDayNames[dayIdx];
+  const dateStr = now.toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
+
+  document.getElementById('hoje-date-label').textContent = dateStr;
+  document.getElementById('hoje-weekday-label').textContent = dayName;
+
+  // Greet by time
+  const h = now.getHours();
+  const greet = h < 12 ? 'Bom dia! 👋' : h < 18 ? 'Boa tarde! ☀️' : 'Boa noite! 🌙';
+  document.querySelector('.hoje-title').textContent = greet;
+
+  // Tasks for today (all tasks shown, prioritizing today's)
+  const todayTasks = tasks.filter(t => !t.days || t.days.length === 0 || t.days.includes(dayShort));
+  const doneTasks = todayTasks.filter(t => t.done).length;
+  const pct = todayTasks.length ? Math.round((doneTasks / todayTasks.length) * 100) : 0;
+  const circ = 201;
+
+  document.getElementById('hoje-tasks-count').textContent = todayTasks.length;
+  document.getElementById('hoje-done-count').textContent = doneTasks;
+
+  // Ring
+  const ring = document.getElementById('hoje-ring');
+  ring.style.strokeDashoffset = circ - (circ * pct / 100);
+  document.getElementById('hoje-ring-pct').textContent = pct + '%';
+
+  // Today's routines
+  const todayRoutines = routines.filter(r => r.days && r.days.includes(dayShort));
+  document.getElementById('hoje-routines-count').textContent = todayRoutines.length;
+
+  // Render tasks
+  const tList = document.getElementById('hoje-tasks-list');
+  if (!todayTasks.length) {
+    tList.innerHTML = `<div class="empty-state"><p>Nenhuma tarefa para hoje.</p></div>`;
+  } else {
+    tList.innerHTML = todayTasks.map(t => `
+      <div class="hoje-task-item${t.done ? ' done' : ''}" onclick="toggleTaskFromHoje('${t.id}')">
+        <div class="hoje-task-check">
+          ${t.done ? `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>` : ''}
+        </div>
+        <div style="flex:1">
+          <div class="hoje-task-name">${t.title}</div>
+          <div class="hoje-task-cat">${t.category || ''}</div>
+        </div>
+      </div>`).join('');
+  }
+
+  // Render routines
+  const rList = document.getElementById('hoje-routines-list');
+  if (!todayRoutines.length) {
+    rList.innerHTML = `<div class="empty-state"><p>Sem rotinas hoje.</p></div>`;
+  } else {
+    rList.innerHTML = todayRoutines.map(r => `
+      <div class="hoje-routine-chip">
+        <span>${r.icon || '📌'}</span>
+        <span style="flex:1;font-size:13px">${r.name}</span>
+        ${r.time ? `<span style="font-size:11px;color:var(--gray-400);font-family:'DM Mono',monospace">${r.time}</span>` : ''}
+      </div>`).join('');
+  }
+}
+
+window.toggleTaskFromHoje = (id) => {
+  const t = tasks.find(t => t.id === id);
+  if (t) { toggleTask(id); setTimeout(renderHoje, 100); }
+};
+
+// ── AGENDA ──
+let agendaEvents = JSON.parse(localStorage.getItem('days-agenda') || '{}');
+let agendaSelectedDay = new Date().getDay(); // 0=Sun
+let agendaSelectedColor = '#000000';
+let agendaStartHour = 6;
+let agendaTotalHours = 18; // 6am to midnight
+
+function saveAgendaLocal() {
+  localStorage.setItem('days-agenda', JSON.stringify(agendaEvents));
+}
+
+function renderAgenda() {
+  // Build day tabs (this week)
+  const tabs = document.getElementById('agendaDayTabs');
+  const today = new Date().getDay();
+  const dayLabels = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+  tabs.innerHTML = dayLabels.map((d, i) => `
+    <div class="tab${i === agendaSelectedDay ? ' active' : ''}" onclick="selectAgendaDay(${i})">${d}${i===today?' ●':''}</div>
+  `).join('');
+
+  const dayKey = `day-${agendaSelectedDay}`;
+  const events = agendaEvents[dayKey] || [];
+
+  document.getElementById('agenda-day-title').textContent = weekDayNames[agendaSelectedDay];
+  document.getElementById('agenda-day-sub').textContent = agendaSelectedDay === today ? 'Hoje' : dayLabels[agendaSelectedDay];
+  document.getElementById('agenda-event-count').textContent = `${events.length} bloco${events.length !== 1 ? 's' : ''}`;
+
+  // Build time grid
+  const grid = document.getElementById('agendaGrid');
+  const timeCol = [];
+  const slotLines = [];
+  for (let i = 0; i < agendaTotalHours; i++) {
+    const h = agendaStartHour + i;
+    const label = `${String(h).padStart(2,'0')}:00`;
+    timeCol.push(`<div class="agenda-time-slot">${label}</div>`);
+    slotLines.push(`<div class="agenda-slot-line" onclick="openAgendaModalAtHour(${h})"><span class="add-hint">+ Adicionar</span></div>`);
+  }
+
+  grid.innerHTML = `
+    <div class="agenda-time-col">${timeCol.join('')}</div>
+    <div class="agenda-events-col" id="agendaEventsCol" style="position:relative">
+      ${slotLines.join('')}
+    </div>
+  `;
+
+  // Render now line
+  const nowH = new Date().getHours();
+  const nowM = new Date().getMinutes();
+  if (agendaSelectedDay === today && nowH >= agendaStartHour && nowH < agendaStartHour + agendaTotalHours) {
+    const topPx = ((nowH - agendaStartHour) + nowM / 60) * 64;
+    const nowLine = document.createElement('div');
+    nowLine.className = 'agenda-now-line';
+    nowLine.style.top = topPx + 'px';
+    document.getElementById('agendaEventsCol').appendChild(nowLine);
+    // Scroll to now
+    setTimeout(() => {
+      const scroll = document.getElementById('agendaScrollArea');
+      if (scroll) scroll.scrollTop = Math.max(0, topPx - 100);
+    }, 100);
+  }
+
+  // Render events
+  events.forEach((ev, idx) => {
+    const [sh, sm] = ev.start.split(':').map(Number);
+    const [eh, em] = ev.end.split(':').map(Number);
+    const startOffset = (sh - agendaStartHour + sm / 60) * 64;
+    const duration = ((eh * 60 + em) - (sh * 60 + sm)) / 60 * 64;
+    const el = document.createElement('div');
+    el.className = 'agenda-event';
+    el.style.top = startOffset + 'px';
+    el.style.height = Math.max(32, duration) + 'px';
+    el.style.background = ev.color || '#000';
+    el.innerHTML = `
+      <div class="agenda-event-time">${ev.start} – ${ev.end}</div>
+      <div>${ev.title}</div>
+      <div class="agenda-event-delete" onclick="deleteAgendaEvent('${dayKey}',${idx},event)">✕</div>
+    `;
+    document.getElementById('agendaEventsCol').appendChild(el);
+  });
+}
+
+window.selectAgendaDay = (d) => { agendaSelectedDay = d; renderAgenda(); };
+window.deleteAgendaEvent = (dayKey, idx, e) => {
+  e.stopPropagation();
+  agendaEvents[dayKey].splice(idx, 1);
+  saveAgendaLocal();
+  renderAgenda();
+};
+
+window.selectAgendaColor = (el) => {
+  document.querySelectorAll('.agenda-color-opt').forEach(e => e.classList.remove('selected'));
+  el.classList.add('selected');
+  agendaSelectedColor = el.dataset.color;
+};
+
+window.openAgendaModal = () => {
+  document.getElementById('agendaStartInput').value = '09:00';
+  document.getElementById('agendaEndInput').value = '10:00';
+  document.getElementById('agendaTitleInput').value = '';
+  document.getElementById('modalAgenda').classList.add('open');
+};
+
+window.openAgendaModalAtHour = (h) => {
+  const hStr = String(h).padStart(2,'0');
+  const hNextStr = String(h+1).padStart(2,'0');
+  document.getElementById('agendaStartInput').value = `${hStr}:00`;
+  document.getElementById('agendaEndInput').value = `${hNextStr}:00`;
+  document.getElementById('agendaTitleInput').value = '';
+  document.getElementById('modalAgenda').classList.add('open');
+};
+
+window.saveAgendaEvent = () => {
+  const title = document.getElementById('agendaTitleInput').value.trim();
+  const start = document.getElementById('agendaStartInput').value;
+  const end = document.getElementById('agendaEndInput').value;
+  if (!title || !start || !end) return;
+  if (start >= end) { alert('O horário de início deve ser antes do fim.'); return; }
+  const dayKey = `day-${agendaSelectedDay}`;
+  if (!agendaEvents[dayKey]) agendaEvents[dayKey] = [];
+  agendaEvents[dayKey].push({ title, start, end, color: agendaSelectedColor });
+  agendaEvents[dayKey].sort((a, b) => a.start.localeCompare(b.start));
+  saveAgendaLocal();
+  closeModal('modalAgenda');
+  renderAgenda();
+  toast('Bloco adicionado!', 'success');
+};
+
+// ── POMODORO ──
+const pomDurations = { focus: 25*60, short: 5*60, long: 15*60 };
+const pomLabels = { focus: 'Foco profundo', short: 'Pausa curta', long: 'Pausa longa' };
+let pomMode = 'focus';
+let pomSecondsLeft = pomDurations.focus;
+let pomTotalSeconds = pomDurations.focus;
+let pomRunning = false;
+let pomInterval = null;
+let pomSessionsDone = 0;
+let pomLog = [];
+
+function renderPomodoro() {
+  updatePomDisplay();
+  renderPomSessions();
+  renderPomLog();
+  renderPomTaskSelect();
+}
+
+function setPomDisplay() {
+  const m = Math.floor(pomSecondsLeft / 60);
+  const s = pomSecondsLeft % 60;
+  document.getElementById('pomTime').textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  document.getElementById('pomLabel').textContent = pomLabels[pomMode];
+  // Ring
+  const circ = 653;
+  const pct = pomSecondsLeft / pomTotalSeconds;
+  const fill = document.getElementById('pomRingFill');
+  fill.style.strokeDashoffset = circ * (1 - pct);
+  fill.setAttribute('class', `pom-ring-fill${!pomRunning && pomSecondsLeft < pomTotalSeconds ? ' paused' : ''}`);
+}
+
+function updatePomDisplay() { setPomDisplay(); }
+
+window.setPomMode = (mode, el) => {
+  if (pomRunning) return;
+  pomMode = mode;
+  pomSecondsLeft = pomDurations[mode];
+  pomTotalSeconds = pomDurations[mode];
+  document.querySelectorAll('.pom-tab').forEach(t => t.classList.remove('active'));
+  el.classList.add('active');
+  setPomDisplay();
+};
+
+window.pomToggle = () => {
+  if (pomRunning) {
+    clearInterval(pomInterval);
+    pomRunning = false;
+    document.getElementById('pomPlayIcon').innerHTML = '<polygon points="5 3 19 12 5 21 5 3"/>';
+    setPomDisplay();
+  } else {
+    pomRunning = true;
+    document.getElementById('pomPlayIcon').innerHTML = '<rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/>';
+    pomInterval = setInterval(() => {
+      pomSecondsLeft--;
+      setPomDisplay();
+      if (pomSecondsLeft <= 0) {
+        clearInterval(pomInterval);
+        pomRunning = false;
+        pomSessionsDone++;
+        const taskSel = document.getElementById('pomTaskSelect');
+        const taskTitle = taskSel.options[taskSel.selectedIndex]?.text || '—';
+        pomLog.unshift({ mode: pomMode, task: taskTitle, time: new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) });
+        if (pomLog.length > 10) pomLog.pop();
+        renderPomSessions();
+        renderPomLog();
+        // Auto switch
+        const nextMode = pomMode === 'focus' ? (pomSessionsDone % 4 === 0 ? 'long' : 'short') : 'focus';
+        pomMode = nextMode;
+        pomSecondsLeft = pomDurations[nextMode];
+        pomTotalSeconds = pomDurations[nextMode];
+        document.querySelectorAll('.pom-tab').forEach(t => t.classList.toggle('active', t.dataset.mode === nextMode));
+        document.getElementById('pomPlayIcon').innerHTML = '<polygon points="5 3 19 12 5 21 5 3"/>';
+        setPomDisplay();
+        toast(pomMode === 'focus' ? '⏰ Hora de focar!' : '☕ Hora de descansar!');
+        try { new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAA==').play(); } catch(e) {}
+      }
+    }, 1000);
+  }
+};
+
+window.pomReset = () => {
+  clearInterval(pomInterval);
+  pomRunning = false;
+  pomSecondsLeft = pomDurations[pomMode];
+  pomTotalSeconds = pomDurations[pomMode];
+  document.getElementById('pomPlayIcon').innerHTML = '<polygon points="5 3 19 12 5 21 5 3"/>';
+  setPomDisplay();
+};
+
+window.pomSkip = () => {
+  clearInterval(pomInterval);
+  pomRunning = false;
+  pomSecondsLeft = 0;
+  document.getElementById('pomPlayIcon').innerHTML = '<polygon points="5 3 19 12 5 21 5 3"/>';
+  pomToggle();
+};
+
+function renderPomSessions() {
+  const total = 4;
+  document.getElementById('pomSessions').innerHTML = Array.from({ length: total }, (_, i) =>
+    `<div class="pom-dot${i < (pomSessionsDone % 4 || (pomSessionsDone > 0 && pomMode !== 'focus' ? 4 : 0)) ? ' done' : ''}"></div>`
+  ).join('');
+}
+
+function renderPomLog() {
+  const log = document.getElementById('pomLog');
+  if (!pomLog.length) { log.innerHTML = ''; return; }
+  log.innerHTML = pomLog.map(l => `
+    <div class="pom-log-item">
+      <span>${l.mode === 'focus' ? '🧠' : '☕'}</span>
+      <span>${l.mode === 'focus' ? 'Foco' : 'Pausa'} — ${l.task}</span>
+      <span class="pom-log-time">${l.time}</span>
+    </div>`).join('');
+}
+
+function renderPomTaskSelect() {
+  const sel = document.getElementById('pomTaskSelect');
+  const pending = tasks.filter(t => !t.done);
+  sel.innerHTML = `<option value="">— Nenhuma tarefa selecionada —</option>` +
+    pending.map(t => `<option value="${t.id}">${t.title}</option>`).join('');
+}
+
 // ── RENDER ALL ──
 function renderAll() {
   updateBadges();
+  updateDayProgress();
   renderTasks('dashboard-tasks', (_, i) => i < 5);
   applyFilter();
   renderRoutineList();
@@ -1510,7 +2236,7 @@ function renderCategoryStats() {
   container.innerHTML = entries.map(([cat, { total, done }]) => {
     const pct = total ? Math.round((done / total) * 100) : 0;
     return `<div class="habit-item">
-      <div class="habit-icon" style="background:var(--gray-100)">${cat.split(' ')[0]}</div>
+      <div class="habit-icon" style="background:var(--gray-100)">${categoryIcon(cat, 18)}</div>
       <div class="habit-info">
         <div class="habit-name">${cat}</div>
         <div class="habit-bar-track"><div class="habit-bar-fill" style="width:${pct}%"></div></div>
@@ -1526,7 +2252,10 @@ const views = {
   routine:   { title: 'Rotina', sub: 'Seus hábitos e recorrências' },
   tasks:     { title: 'Tasks', sub: 'Organize suas tarefas' },
   finance:   { title: 'Desafio Financeiro', sub: 'Guarde dinheiro semana a semana' },
-  settings:  { title: 'Configurações', sub: 'Perfil e preferências' }
+  settings:  { title: 'Configurações', sub: 'Perfil e preferências' },
+  hoje:      { title: 'Hoje', sub: 'Seu dia em foco' },
+  agenda:    { title: 'Agenda', sub: 'Planejamento por horário' },
+  pomodoro:  { title: 'Pomodoro', sub: 'Sessões de foco e descanso' },
 };
 
 window.navigate = (el) => {
@@ -1544,11 +2273,15 @@ window.navigate = (el) => {
   if (v === 'tasks') { btn.style.display = ''; btn.onclick = openAddModal; btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Nova Tarefa`; }
   else if (v === 'routine') { btn.style.display = ''; btn.onclick = openRoutineModal; btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Nova Rotina`; }
   else if (v === 'dashboard') { btn.style.display = ''; btn.onclick = openAddModal; btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Nova Tarefa`; }
+  else if (v === 'agenda') { btn.style.display = ''; btn.onclick = openAgendaModal; btn.innerHTML = `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg> Novo Bloco`; }
   else btn.style.display = 'none';
 
   closeSidebar();
   if (v === 'finance') renderFinance();
   if (v === 'routine') { renderRoutineList(); renderRoutineWeek(); }
+  if (v === 'hoje') renderHoje();
+  if (v === 'agenda') renderAgenda();
+  if (v === 'pomodoro') renderPomodoro();
 };
 
 // ── MODALS ──
