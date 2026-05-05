@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Days - Vida Produtiva</title>
+<title>Days — Productive Life</title>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
 <link rel="shortcut icon" href="assets/logomarca.png" type="image/x-icon">
 <style>
@@ -712,6 +712,106 @@
   }
   .pom-log-time { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--gray-400); margin-left: auto; }
 
+  /* ── STREAK ── */
+  .streak-card {
+    background: var(--black); border-radius: var(--radius);
+    padding: 22px 24px; display: flex; align-items: center; gap: 20px;
+    animation: fade-up 0.3s ease both;
+  }
+  .streak-flame { font-size: 48px; line-height: 1; flex-shrink: 0; }
+  .streak-info { flex: 1; }
+  .streak-count { font-size: 44px; font-weight: 700; color: var(--white); font-family: 'DM Mono', monospace; letter-spacing: -2px; line-height: 1; }
+  .streak-label { font-size: 13px; color: var(--gray-400); margin-top: 4px; }
+  .streak-best { font-size: 12px; color: var(--gray-500); margin-top: 8px; }
+
+  .streak-list { display: flex; flex-direction: column; gap: 10px; }
+  .streak-habit {
+    display: flex; align-items: center; gap: 12px;
+    padding: 12px 16px; border-radius: 10px;
+    border: 1px solid var(--gray-100); background: var(--white);
+    transition: box-shadow var(--transition);
+  }
+  .streak-habit:hover { box-shadow: var(--shadow); }
+  .streak-habit-icon { font-size: 22px; flex-shrink: 0; }
+  .streak-habit-info { flex: 1; }
+  .streak-habit-name { font-size: 14px; font-weight: 500; }
+  .streak-habit-days { font-size: 11px; color: var(--gray-400); margin-top: 2px; }
+  .streak-habit-count {
+    font-size: 20px; font-weight: 700; font-family: 'DM Mono', monospace;
+    color: var(--black); display: flex; align-items: center; gap: 4px;
+  }
+  .streak-fire { font-size: 16px; }
+  .streak-dots { display: flex; gap: 4px; margin-top: 6px; }
+  .streak-dot {
+    width: 8px; height: 8px; border-radius: 2px;
+    background: var(--gray-100); transition: background 0.2s;
+  }
+  .streak-dot.hit { background: var(--black); }
+  .streak-dot.today { outline: 2px solid var(--gray-400); outline-offset: 1px; }
+
+  /* ── HEATMAP ── */
+  .heatmap-wrap { overflow-x: auto; }
+  .heatmap-grid {
+    display: grid;
+    grid-template-rows: repeat(7, 14px);
+    grid-auto-flow: column;
+    gap: 3px;
+    width: max-content;
+  }
+  .heatmap-cell {
+    width: 14px; height: 14px; border-radius: 3px;
+    background: var(--gray-100);
+    transition: background 0.2s, transform 0.15s;
+    cursor: default; position: relative;
+  }
+  .heatmap-cell:hover { transform: scale(1.3); z-index: 2; }
+  .heatmap-cell.l1 { background: #d4d4d4; }
+  .heatmap-cell.l2 { background: #737373; }
+  .heatmap-cell.l3 { background: #404040; }
+  .heatmap-cell.l4 { background: #000000; }
+  .heatmap-months { display: flex; gap: 3px; width: max-content; margin-bottom: 4px; }
+  .heatmap-month-label { font-size: 10px; color: var(--gray-400); font-family: 'DM Mono', monospace; }
+  .heatmap-days { display: grid; grid-template-rows: repeat(7,14px); gap: 3px; margin-right: 6px; flex-shrink: 0; }
+  .heatmap-day-label { font-size: 9px; color: var(--gray-400); font-family: 'DM Mono', monospace; display: flex; align-items: center; height: 14px; }
+  .heatmap-legend { display: flex; align-items: center; gap: 4px; margin-top: 10px; font-size: 11px; color: var(--gray-400); }
+  .heatmap-legend-cell { width: 12px; height: 12px; border-radius: 2px; }
+
+  /* ── RELATÓRIO SEMANAL ── */
+  .relatorio-header {
+    background: var(--black); border-radius: var(--radius);
+    padding: 24px; margin-bottom: 20px; animation: fade-up 0.3s ease both;
+  }
+  .relatorio-week { font-size: 12px; color: var(--gray-500); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1px; }
+  .relatorio-title { font-size: 22px; font-weight: 600; color: var(--white); letter-spacing: -0.5px; margin-bottom: 16px; }
+  .relatorio-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+  .relatorio-stat { text-align: center; }
+  .relatorio-stat-num { font-size: 28px; font-weight: 700; color: var(--white); font-family: 'DM Mono', monospace; letter-spacing: -1px; }
+  .relatorio-stat-label { font-size: 11px; color: var(--gray-500); margin-top: 3px; }
+
+  .relatorio-day-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 10px 0; border-bottom: 1px solid var(--gray-100);
+  }
+  .relatorio-day-row:last-child { border-bottom: none; }
+  .relatorio-day-name { font-size: 13px; font-weight: 500; width: 36px; flex-shrink: 0; }
+  .relatorio-day-name.best { color: var(--black); font-weight: 700; }
+  .relatorio-bar-wrap { flex: 1; height: 8px; background: var(--gray-100); border-radius: 99px; overflow: hidden; }
+  .relatorio-bar-fill { height: 100%; background: var(--black); border-radius: 99px; transition: width 0.8s cubic-bezier(0.4,0,0.2,1); }
+  .relatorio-day-num { font-size: 12px; font-family: 'DM Mono', monospace; color: var(--gray-400); width: 28px; text-align: right; flex-shrink: 0; }
+  .relatorio-best-badge {
+    font-size: 10px; background: var(--black); color: var(--white);
+    padding: 2px 7px; border-radius: 99px; flex-shrink: 0;
+  }
+
+  .insight-item {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 14px; border-radius: 10px; background: var(--gray-50);
+    border: 1px solid var(--gray-100); margin-bottom: 8px;
+  }
+  .insight-icon { font-size: 20px; flex-shrink: 0; margin-top: 1px; }
+  .insight-text { font-size: 13px; line-height: 1.5; color: var(--gray-700); }
+  .insight-text strong { color: var(--black); }
+
   /* ── CHALLENGE WEEK CARDS ── */
   .week-challenge-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 8px; }
   .week-card {
@@ -870,6 +970,28 @@
         <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
       </svg>
       Pomodoro
+    </div>
+  </nav>
+
+  <nav class="nav-section">
+    <div class="nav-label">Análise</div>
+    <div class="nav-item" data-view="streak" onclick="navigate(this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/>
+      </svg>
+      Streak
+    </div>
+    <div class="nav-item" data-view="historico" onclick="navigate(this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/>
+      </svg>
+      Histórico
+    </div>
+    <div class="nav-item" data-view="relatorio" onclick="navigate(this)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M18 20V10M12 20V4M6 20v-6"/>
+      </svg>
+      Relatório
     </div>
   </nav>
 
@@ -1222,6 +1344,121 @@
           </select>
           <div class="pom-log" id="pomLog"></div>
         </div>
+      </div>
+    </div>
+
+    <!-- ── STREAK ── -->
+    <div class="view" id="view-streak">
+      <div class="grid-2" style="margin-bottom:20px">
+        <div class="streak-card">
+          <div class="streak-flame">🔥</div>
+          <div class="streak-info">
+            <div class="streak-count" id="streak-total">0</div>
+            <div class="streak-label">dias consecutivos ativos</div>
+            <div class="streak-best" id="streak-best-label">Melhor sequência: 0 dias</div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-header" style="margin-bottom:14px">
+            <div><div class="card-title">Esta Semana</div><div class="card-sub">Dias com atividade</div></div>
+          </div>
+          <div style="display:flex;gap:8px;justify-content:space-between" id="streakWeekDots"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header" style="margin-bottom:16px">
+          <div><div class="card-title">Streak por Rotina</div><div class="card-sub">Sequência de cada hábito</div></div>
+        </div>
+        <div class="streak-list" id="streakList"></div>
+      </div>
+    </div>
+
+    <!-- ── HISTÓRICO ── -->
+    <div class="view" id="view-historico">
+      <div class="card" style="margin-bottom:20px">
+        <div class="card-header" style="margin-bottom:16px">
+          <div><div class="card-title">Mapa de Atividade</div><div class="card-sub">Últimos 6 meses — tarefas concluídas por dia</div></div>
+          <div class="heatmap-legend">
+            Menos
+            <div class="heatmap-legend-cell" style="background:var(--gray-100)"></div>
+            <div class="heatmap-legend-cell" style="background:#d4d4d4"></div>
+            <div class="heatmap-legend-cell" style="background:#737373"></div>
+            <div class="heatmap-legend-cell" style="background:#404040"></div>
+            <div class="heatmap-legend-cell" style="background:#000"></div>
+            Mais
+          </div>
+        </div>
+        <div class="heatmap-wrap">
+          <div style="display:flex">
+            <div class="heatmap-days" id="heatmapDayLabels"></div>
+            <div>
+              <div class="heatmap-months" id="heatmapMonthLabels"></div>
+              <div class="heatmap-grid" id="heatmapGrid"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-header" style="margin-bottom:14px">
+            <div><div class="card-title">Resumo do Período</div><div class="card-sub">Últimos 180 dias</div></div>
+          </div>
+          <div id="heatmapSummary"></div>
+        </div>
+        <div class="card">
+          <div class="card-header" style="margin-bottom:14px">
+            <div><div class="card-title">Melhores Dias</div><div class="card-sub">Top 5 mais produtivos</div></div>
+          </div>
+          <div id="heatmapTopDays"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── RELATÓRIO SEMANAL ── -->
+    <div class="view" id="view-relatorio">
+      <div class="relatorio-header">
+        <div class="relatorio-week" id="relatorio-week-label">—</div>
+        <div class="relatorio-title">Relatório Semanal 📊</div>
+        <div class="relatorio-stats">
+          <div class="relatorio-stat">
+            <div class="relatorio-stat-num" id="rel-concluidas">0</div>
+            <div class="relatorio-stat-label">Concluídas</div>
+          </div>
+          <div class="relatorio-stat">
+            <div class="relatorio-stat-num" id="rel-taxa">0%</div>
+            <div class="relatorio-stat-label">Taxa</div>
+          </div>
+          <div class="relatorio-stat">
+            <div class="relatorio-stat-num" id="rel-rotinas">0</div>
+            <div class="relatorio-stat-label">Rotinas</div>
+          </div>
+          <div class="relatorio-stat">
+            <div class="relatorio-stat-num" id="rel-streak">0</div>
+            <div class="relatorio-stat-label">Streak</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="grid-2" style="margin-bottom:20px">
+        <div class="card">
+          <div class="card-header" style="margin-bottom:16px">
+            <div><div class="card-title">Atividade por Dia</div><div class="card-sub">Tarefas concluídas esta semana</div></div>
+          </div>
+          <div id="relatorioBarras"></div>
+        </div>
+        <div class="card">
+          <div class="card-header" style="margin-bottom:16px">
+            <div><div class="card-title">Insights</div><div class="card-sub">Análise automática</div></div>
+          </div>
+          <div id="relatorioInsights"></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="card-header" style="margin-bottom:16px">
+          <div><div class="card-title">Por Categoria</div><div class="card-sub">Distribuição desta semana</div></div>
+        </div>
+        <div id="relatorioCategoria"></div>
       </div>
     </div>
 
@@ -2173,6 +2410,315 @@ function renderPomTaskSelect() {
     pending.map(t => `<option value="${t.id}">${t.title}</option>`).join('');
 }
 
+// ── STREAK ──
+// Activity log stored in localStorage: { 'YYYY-MM-DD': count }
+function getActivityLog() {
+  return JSON.parse(localStorage.getItem('days-activity') || '{}');
+}
+function recordTodayActivity() {
+  const log = getActivityLog();
+  const key = todayKey();
+  log[key] = (log[key] || 0) + 1;
+  localStorage.setItem('days-activity', JSON.stringify(log));
+}
+function todayKey() {
+  return new Date().toISOString().slice(0, 10);
+}
+function dateKey(d) {
+  return d.toISOString().slice(0, 10);
+}
+
+function calcStreak(log) {
+  let streak = 0;
+  const d = new Date();
+  // If today has no activity, start from yesterday
+  if (!log[dateKey(d)]) d.setDate(d.getDate() - 1);
+  while (log[dateKey(d)]) {
+    streak++;
+    d.setDate(d.getDate() - 1);
+  }
+  return streak;
+}
+
+function calcBestStreak(log) {
+  const keys = Object.keys(log).sort();
+  if (!keys.length) return 0;
+  let best = 1, cur = 1;
+  for (let i = 1; i < keys.length; i++) {
+    const prev = new Date(keys[i-1]);
+    const curr = new Date(keys[i]);
+    const diff = (curr - prev) / 86400000;
+    if (diff === 1) { cur++; best = Math.max(best, cur); }
+    else cur = 1;
+  }
+  return best;
+}
+
+function renderStreak() {
+  const log = getActivityLog();
+  // Record today if there are any done tasks
+  if (tasks.some(t => t.done)) recordTodayActivity();
+
+  const streak = calcStreak(log);
+  const best = calcBestStreak(log);
+
+  document.getElementById('streak-total').textContent = streak;
+  document.getElementById('streak-best-label').textContent = `Melhor sequência: ${best} dias`;
+
+  // Week dots (Mon–Sun)
+  const weekEl = document.getElementById('streakWeekDots');
+  const today = new Date();
+  const dow = today.getDay(); // 0=Sun
+  const monday = new Date(today);
+  monday.setDate(today.getDate() - (dow === 0 ? 6 : dow - 1));
+  const days = ['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'];
+  weekEl.innerHTML = days.map((d, i) => {
+    const date = new Date(monday);
+    date.setDate(monday.getDate() + i);
+    const key = dateKey(date);
+    const active = !!log[key];
+    const isToday = key === todayKey();
+    return `<div style="text-align:center;flex:1">
+      <div style="width:32px;height:32px;border-radius:8px;margin:0 auto 6px;
+        background:${active ? 'var(--black)' : 'var(--gray-100)'};
+        ${isToday ? 'outline:2px solid var(--gray-400);outline-offset:2px;' : ''}
+        display:flex;align-items:center;justify-content:center">
+        ${active ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>' : ''}
+      </div>
+      <div style="font-size:10px;color:${isToday?'var(--black)':'var(--gray-400)'};font-weight:${isToday?'600':'400'}">${d}</div>
+    </div>`;
+  }).join('');
+
+  // Streak per routine (simulated: streak based on days assigned vs today)
+  const streakList = document.getElementById('streakList');
+  if (!routines.length) {
+    streakList.innerHTML = `<div class="empty-state"><p>Cadastre rotinas para ver o streak delas.</p></div>`;
+    return;
+  }
+  const dayShortMap = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+  streakList.innerHTML = routines.map(r => {
+    // Simulate streak: count recent days where this routine was scheduled
+    let rStreak = 0;
+    const check = new Date();
+    for (let i = 0; i < 30; i++) {
+      const ds = dayShortMap[check.getDay()];
+      if (r.days && r.days.includes(ds) && log[dateKey(check)]) rStreak++;
+      else if (i > 0) break;
+      check.setDate(check.getDate() - 1);
+    }
+    // Show last 7 dots
+    const dotDays = Array.from({length: 7}, (_, i) => {
+      const d2 = new Date(today);
+      d2.setDate(today.getDate() - (6 - i));
+      const ds2 = dayShortMap[d2.getDay()];
+      const scheduled = r.days && r.days.includes(ds2);
+      const active2 = scheduled && !!log[dateKey(d2)];
+      const isT = dateKey(d2) === todayKey();
+      return `<div class="streak-dot${active2?' hit':''}${isT?' today':''}"></div>`;
+    }).join('');
+    return `<div class="streak-habit">
+      <div class="streak-habit-icon">${r.icon || '📌'}</div>
+      <div class="streak-habit-info">
+        <div class="streak-habit-name">${r.name}</div>
+        <div class="streak-dots">${dotDays}</div>
+        <div class="streak-habit-days">${(r.days||[]).join(', ')}</div>
+      </div>
+      <div class="streak-habit-count">${rStreak}<span class="streak-fire">🔥</span></div>
+    </div>`;
+  }).join('');
+}
+
+// ── HISTÓRICO (HEATMAP) ──
+function renderHistorico() {
+  if (tasks.some(t => t.done)) recordTodayActivity();
+  const log = getActivityLog();
+
+  // Build 26 weeks (182 days) back from today
+  const today = new Date();
+  const totalDays = 182;
+  const start = new Date(today);
+  start.setDate(today.getDate() - totalDays + 1);
+  // Align to Monday
+  const startDow = start.getDay();
+  const offset = startDow === 0 ? 6 : startDow - 1;
+  start.setDate(start.getDate() - offset);
+
+  // Max value for intensity
+  const vals = Object.values(log).map(Number);
+  const maxVal = Math.max(...vals, 1);
+
+  // Build cells
+  const grid = document.getElementById('heatmapGrid');
+  const cells = [];
+  const monthPositions = {};
+  let col = 0;
+  const d = new Date(start);
+
+  while (d <= today) {
+    const key = dateKey(d);
+    const count = log[key] || 0;
+    const month = d.getMonth();
+    const dow = d.getDay() === 0 ? 6 : d.getDay() - 1; // 0=Mon
+    if (dow === 0 && !monthPositions[month]) monthPositions[month] = col;
+    const level = count === 0 ? '' : count <= maxVal * 0.25 ? 'l1' : count <= maxVal * 0.5 ? 'l2' : count <= maxVal * 0.75 ? 'l3' : 'l4';
+    const dateStr = d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' });
+    cells.push(`<div class="heatmap-cell${level?' '+level:''}" title="${dateStr}: ${count} atividade${count!==1?'s':''}"></div>`);
+    if (dow === 6) col++;
+    d.setDate(d.getDate() + 1);
+  }
+  grid.innerHTML = cells.join('');
+  grid.style.gridTemplateColumns = `repeat(${col+1}, 14px)`;
+
+  // Day labels
+  document.getElementById('heatmapDayLabels').innerHTML =
+    ['Seg','','Qua','','Sex','','Dom'].map(l => `<div class="heatmap-day-label">${l}</div>`).join('');
+
+  // Month labels
+  const monthNames = ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+  const monthWrap = document.getElementById('heatmapMonthLabels');
+  monthWrap.innerHTML = '';
+  let lastCol = 0;
+  Object.entries(monthPositions).sort((a,b) => Number(a[1])-Number(b[1])).forEach(([m, c]) => {
+    const gap = (Number(c) - lastCol) * 17;
+    const label = document.createElement('div');
+    label.className = 'heatmap-month-label';
+    label.style.minWidth = gap + 'px';
+    label.textContent = monthNames[Number(m)];
+    monthWrap.appendChild(label);
+    lastCol = Number(c);
+  });
+
+  // Summary stats
+  const activeDays = Object.keys(log).filter(k => new Date(k) >= start).length;
+  const totalActivity = Object.values(log).filter((_, i) => new Date(Object.keys(log)[i]) >= start).reduce((s, v) => s + Number(v), 0);
+  const currentStreak = calcStreak(log);
+  const bestStreak = calcBestStreak(log);
+
+  document.getElementById('heatmapSummary').innerHTML = [
+    { label: 'Dias ativos', value: activeDays, sub: 'nos últimos 6 meses' },
+    { label: 'Atividades registradas', value: totalActivity, sub: 'tarefas concluídas' },
+    { label: 'Streak atual', value: `${currentStreak}🔥`, sub: 'dias consecutivos' },
+    { label: 'Melhor streak', value: `${bestStreak}`, sub: 'dias seguidos' },
+  ].map(s => `<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:1px solid var(--gray-100)">
+    <div>
+      <div style="font-size:13px;font-weight:500">${s.label}</div>
+      <div style="font-size:11px;color:var(--gray-400);margin-top:2px">${s.sub}</div>
+    </div>
+    <div style="font-size:20px;font-weight:700;font-family:'DM Mono',monospace">${s.value}</div>
+  </div>`).join('');
+
+  // Top 5 days
+  const topDays = Object.entries(log)
+    .sort((a,b) => Number(b[1]) - Number(a[1]))
+    .slice(0, 5);
+  const topMax = topDays.length ? Number(topDays[0][1]) : 1;
+  document.getElementById('heatmapTopDays').innerHTML = topDays.map(([k, v]) => {
+    const dateDisp = new Date(k + 'T12:00:00').toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
+    return `<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px">
+      <div style="font-size:12px;font-family:'DM Mono',monospace;color:var(--gray-500);width:44px;flex-shrink:0">${dateDisp}</div>
+      <div style="flex:1;height:8px;background:var(--gray-100);border-radius:99px;overflow:hidden">
+        <div style="height:100%;background:var(--black);border-radius:99px;width:${Math.round(Number(v)/topMax*100)}%;transition:width 0.8s ease"></div>
+      </div>
+      <div style="font-size:12px;font-family:'DM Mono',monospace;width:20px;text-align:right">${v}</div>
+    </div>`;
+  }).join('') || `<div class="empty-state"><p>Sem dados ainda.</p></div>`;
+}
+
+// ── RELATÓRIO SEMANAL ──
+function renderRelatorio() {
+  if (tasks.some(t => t.done)) recordTodayActivity();
+  const log = getActivityLog();
+
+  // Get this week Mon–Sun
+  const today = new Date();
+  const dow = today.getDay();
+  const monday = new Date(today);
+  monday.setDate(today.getDate() - (dow === 0 ? 6 : dow - 1));
+  const sunday = new Date(monday);
+  sunday.setDate(monday.getDate() + 6);
+
+  const fmtDate = d => d.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' });
+  document.getElementById('relatorio-week-label').textContent =
+    `${fmtDate(monday)} — ${fmtDate(sunday)}`;
+
+  // Tasks done this week (use activity log counts)
+  const weekDayLabels = ['Seg','Ter','Qua','Qui','Sex','Sáb','Dom'];
+  const dayCounts = weekDayLabels.map((_, i) => {
+    const d = new Date(monday);
+    d.setDate(monday.getDate() + i);
+    return log[dateKey(d)] || 0;
+  });
+  const totalConcluidas = dayCounts.reduce((s, v) => s + v, 0);
+  const taxaConclusao = tasks.length ? Math.round((tasks.filter(t => t.done).length / tasks.length) * 100) : 0;
+  const streak = calcStreak(log);
+
+  document.getElementById('rel-concluidas').textContent = totalConcluidas;
+  document.getElementById('rel-taxa').textContent = taxaConclusao + '%';
+  document.getElementById('rel-rotinas').textContent = routines.length;
+  document.getElementById('rel-streak').textContent = streak;
+
+  // Bar chart per day
+  const maxCount = Math.max(...dayCounts, 1);
+  const bestDayIdx = dayCounts.indexOf(Math.max(...dayCounts));
+  document.getElementById('relatorioBarras').innerHTML = weekDayLabels.map((d, i) => {
+    const isBest = i === bestDayIdx && dayCounts[i] > 0;
+    const isToday = i === (dow === 0 ? 6 : dow - 1);
+    return `<div class="relatorio-day-row">
+      <div class="relatorio-day-name${isBest?' best':''}" style="${isToday?'color:var(--black);font-weight:700':''}">
+        ${d}${isToday?' •':''}
+      </div>
+      <div class="relatorio-bar-wrap">
+        <div class="relatorio-bar-fill" style="width:${dayCounts[i] ? Math.max(4, Math.round(dayCounts[i]/maxCount*100)) : 0}%"></div>
+      </div>
+      <div class="relatorio-day-num">${dayCounts[i]}</div>
+      ${isBest ? '<div class="relatorio-best-badge">🏆 Melhor</div>' : ''}
+    </div>`;
+  }).join('');
+
+  // Insights
+  const insights = [];
+  if (streak >= 3) insights.push({ icon: '🔥', text: `Você está em uma sequência de <strong>${streak} dias</strong> consecutivos. Continue assim!` });
+  if (totalConcluidas === 0) insights.push({ icon: '💡', text: 'Nenhuma atividade registrada esta semana ainda. Que tal começar agora?' });
+  else if (totalConcluidas >= 10) insights.push({ icon: '⭐', text: `Semana muito produtiva! Você registrou <strong>${totalConcluidas} atividades</strong>.` });
+  if (bestDayIdx >= 0 && dayCounts[bestDayIdx] > 0) insights.push({ icon: '📅', text: `Seu dia mais produtivo foi <strong>${weekDayLabels[bestDayIdx]}</strong> com ${dayCounts[bestDayIdx]} atividade${dayCounts[bestDayIdx]!==1?'s':''}.` });
+  if (routines.length === 0) insights.push({ icon: '📌', text: 'Você ainda não tem rotinas cadastradas. Rotinas ajudam a manter a consistência!' });
+  else insights.push({ icon: '✅', text: `Você tem <strong>${routines.length} rotina${routines.length!==1?'s':''}</strong> ativa${routines.length!==1?'s':''}. Bom trabalho mantendo hábitos!` });
+  if (taxaConclusao >= 80) insights.push({ icon: '🎯', text: `Taxa de conclusão de <strong>${taxaConclusao}%</strong>. Excelente desempenho!` });
+  else if (taxaConclusao > 0) insights.push({ icon: '📈', text: `Taxa de conclusão atual: <strong>${taxaConclusao}%</strong>. Você consegue melhorar!` });
+
+  document.getElementById('relatorioInsights').innerHTML = insights.slice(0, 4).map(ins =>
+    `<div class="insight-item"><div class="insight-icon">${ins.icon}</div><div class="insight-text">${ins.text}</div></div>`
+  ).join('') || `<div class="empty-state"><p>Sem insights ainda.</p></div>`;
+
+  // Categories this week
+  const cats = {};
+  tasks.forEach(t => {
+    if (!cats[t.category]) cats[t.category] = { total: 0, done: 0 };
+    cats[t.category].total++;
+    if (t.done) cats[t.category].done++;
+  });
+  const catEntries = Object.entries(cats);
+  const catMaxDone = Math.max(...catEntries.map(([,v]) => v.done), 1);
+  document.getElementById('relatorioCategoria').innerHTML = catEntries.length
+    ? catEntries.map(([cat, { total, done }]) => {
+        const pct = total ? Math.round(done/total*100) : 0;
+        return `<div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+          <div style="font-size:16px;width:24px;text-align:center">${categoryIcon(cat,16)}</div>
+          <div style="flex:1">
+            <div style="display:flex;justify-content:space-between;margin-bottom:4px">
+              <span style="font-size:13px;font-weight:500">${cat}</span>
+              <span style="font-size:12px;color:var(--gray-400);font-family:'DM Mono',monospace">${done}/${total}</span>
+            </div>
+            <div style="height:6px;background:var(--gray-100);border-radius:99px;overflow:hidden">
+              <div style="height:100%;background:var(--black);border-radius:99px;width:${pct}%;transition:width 0.8s ease"></div>
+            </div>
+          </div>
+          <div style="font-size:13px;font-weight:600;font-family:'DM Mono',monospace;width:36px;text-align:right">${pct}%</div>
+        </div>`;
+      }).join('')
+    : `<div class="empty-state"><p>Nenhuma tarefa cadastrada ainda.</p></div>`;
+}
+
 // ── RENDER ALL ──
 function renderAll() {
   updateBadges();
@@ -2256,6 +2802,9 @@ const views = {
   hoje:      { title: 'Hoje', sub: 'Seu dia em foco' },
   agenda:    { title: 'Agenda', sub: 'Planejamento por horário' },
   pomodoro:  { title: 'Pomodoro', sub: 'Sessões de foco e descanso' },
+  streak:    { title: 'Streak', sub: 'Sua sequência de hábitos' },
+  historico: { title: 'Histórico', sub: 'Mapa de atividade dos últimos 6 meses' },
+  relatorio: { title: 'Relatório Semanal', sub: 'Análise automática da sua semana' },
 };
 
 window.navigate = (el) => {
@@ -2282,6 +2831,9 @@ window.navigate = (el) => {
   if (v === 'hoje') renderHoje();
   if (v === 'agenda') renderAgenda();
   if (v === 'pomodoro') renderPomodoro();
+  if (v === 'streak') renderStreak();
+  if (v === 'historico') renderHistorico();
+  if (v === 'relatorio') renderRelatorio();
 };
 
 // ── MODALS ──
