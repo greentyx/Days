@@ -1284,7 +1284,7 @@
           <div class="quote-text" id="quoteText">Carregando...</div>
           <div class="quote-author" id="quoteAuthor">—</div>
         </div>
-        <button class="quote-refresh" onclick="loadQuote(true)" title="Nova frase">
+        <button class="quote-refresh" onclick="typeof loadQuote==='function'&&loadQuote(true)" title="Nova frase">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-4.5"/></svg>
         </button>
       </div>
@@ -1506,7 +1506,7 @@
                 <div class="toggle-thumb"></div>
               </div>
             </div>
-            <button class="btn btn-ghost" onclick="loadQuote(true)">Nova frase</button>
+            <button class="btn btn-ghost" onclick="typeof loadQuote==='function'&&loadQuote(true)">Nova frase</button>
           </div>
           <div style="margin-top:14px;padding:14px;background:var(--gray-50);border-radius:10px;border:1px solid var(--gray-100)">
             <div style="font-size:13px;font-style:italic;color:var(--gray-700)" id="settingsQuotePreview">—</div>
@@ -2047,6 +2047,34 @@
     </div>
   </div>
 </div>
+
+<!-- Shim síncrono: evita erros de "not defined" antes do módulo carregar -->
+<script>
+  const _pending = {};
+  ['doLogin','doRegister','doGuest','doLogout','switchAuthTab',
+   'navigate','openAddModal','openRoutineModal','closeModal','closeModalOutside',
+   'addTask','deleteTask','toggleTask','applyFilter',
+   'addRoutine','deleteRoutine','openAgendaModal','openAgendaModalAtHour',
+   'saveAgendaEvent','selectAgendaDay','deleteAgendaEvent','selectAgendaColor',
+   'setPomMode','pomToggle','pomReset','pomSkip',
+   'toggleTagSelect','createTag','openTaskDetail','closeTaskDetail',
+   'addSubtask','toggleSubtask','deleteSubtask','updateDetailDue','setDetailRecur','updateDetailNotes',
+   'toggleDarkMode','setAccentColor','toggleQuoteWidget','loadQuote',
+   'exportCSV','exportPDF','exportICS','saveSettings',
+   'saveFinanceConfig','toggleDeposit',
+   'toggleTaskFromHoje','closeSidebar'
+  ].forEach(fn => {
+    window[fn] = (...args) => {
+      if (_pending[fn]) return _pending[fn](...args);
+      console.warn(fn + ' chamado antes do módulo carregar');
+    };
+    _pending[fn] = null;
+  });
+  window._registerFn = (name, fn) => {
+    _pending[name] = fn;
+    window[name] = fn;
+  };
+</script>
 
 <script type="module">
 // ── FIREBASE ── importado de js/firebase-config.js
@@ -3418,15 +3446,11 @@ window.updateDetailNotes = async () => {
 };
 
 // Init tag palette in modal when it opens
-const origOpenAddModal = window.openAddModal;
 window.openAddModal = () => {
   renderTagsPalette('modalTagsPalette');
   renderTagColorDots('tagColorDots');
-  if (origOpenAddModal) origOpenAddModal();
-  else document.getElementById('modalTask').classList.add('open');
+  document.getElementById('modalTask').classList.add('open');
 };
-
-// ── NOTIFICATIONS (due date alerts) ──
 function scheduleTaskNotifications() {
   if (!('Notification' in window)) return;
   if (Notification.permission === 'default') {
@@ -3625,22 +3649,6 @@ window.toggleQuoteWidget = () => {
   if (!newHidden) loadQuote();
 };
 
-// Init settings view render
-const origNavigate = window.navigate;
-window.navigate = function(el) {
-  origNavigate(el);
-  const v = typeof el === 'string' ? el : el?.dataset?.view;
-  if (v === 'settings') {
-    updateThemeUI(document.body.classList.contains('dark-mode'));
-    renderAccentSwatches(localStorage.getItem('days-accent-color') || '#000000');
-    loadQuote();
-    const hidden = localStorage.getItem('days-quote-hidden') === 'true';
-    const track = document.getElementById('quoteToggleTrack');
-    const label = document.getElementById('quoteToggleLabel');
-    if (track) track.classList.toggle('on', !hidden);
-    if (label) label.textContent = hidden ? 'Oculto' : 'Visível';
-  }
-};
 
 // ── INTEGRAÇÕES ──
 
@@ -3963,6 +3971,16 @@ window.navigate = (el) => {
   if (v === 'historico') renderHistorico();
   if (v === 'relatorio') renderRelatorio();
   if (v === 'integracoes') renderIntegracoes();
+  if (v === 'settings') {
+    updateThemeUI(document.body.classList.contains('dark-mode'));
+    renderAccentSwatches(localStorage.getItem('days-accent-color') || '#000000');
+    loadQuote();
+    const hidden = localStorage.getItem('days-quote-hidden') === 'true';
+    const track = document.getElementById('quoteToggleTrack');
+    const label = document.getElementById('quoteToggleLabel');
+    if (track) track.classList.toggle('on', !hidden);
+    if (label) label.textContent = hidden ? 'Oculto' : 'Visível';
+  }
 };
 
 // ── MODALS ──
